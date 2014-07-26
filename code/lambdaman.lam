@@ -12,7 +12,7 @@
 
 ; 指定した方向のスペースが空いているか？
 (define (is_empty_pos map_pos world dir_cons)
-  (if (> (map_pos (plus_cons (current_pos world) dir_cons) world) 0)
+  (if (> (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 0)
     1 0))
 
 (cons 0
