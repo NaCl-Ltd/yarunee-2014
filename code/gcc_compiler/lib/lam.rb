@@ -373,7 +373,7 @@ module Lam
         }
 
         with(_[head, *args]){
-          [head, *args.map{|x| transform(x)}]
+          [transform(head), *args.map{|x| transform(x)}]
         }
 
         with(_){ program }
