@@ -96,7 +96,7 @@ module Lam
   class Compiler
     def self.compile(e)
       c = new
-      c.emit(c.compile_main(e))
+      c.compile_main(e).emit
     end
     
     def compile_main(e)

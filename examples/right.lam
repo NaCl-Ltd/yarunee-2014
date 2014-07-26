@@ -1,0 +1,12 @@
+[:cons, 0, [:lambda, ["s", "w"], [:cons, 0, 1]]]
+
+# 以下を出力する
+# LDC  0
+# LDF  4
+# CONS
+# RTN
+# LDC  0
+# LDC  1
+# CONS
+# RTN
+
