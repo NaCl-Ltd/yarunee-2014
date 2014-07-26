@@ -23,6 +23,8 @@ module Lam
     def self.convert_recursive(ast)
       case ast
       when String
+        # SExpressionParserが文字列"foo"を'["a", "b", "c"]'に
+        # してしまうことへの対処
         return eval(ast).join
       when Array
         return ast.map{|x| convert_recursive(x)}
