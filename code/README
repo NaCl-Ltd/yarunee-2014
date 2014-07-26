@@ -8,9 +8,9 @@
 ## Compiling
 
 ```sh
-$ cd code
 $ bundle
-$ bundle exec ./lam examples/right.lam > right.gcc
+$ cd code
+$ bundle exec ./lam lambdaman.lam > ../solution/lambdaman.gcc
 ```
 
 ## Members
