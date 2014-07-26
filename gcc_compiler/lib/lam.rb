@@ -3,6 +3,8 @@ require 'sexp'
 require 'forwardable'
 
 module Lam
+  class Error < StandardError; end
+
   # S-式の文字列をlam ASTに変換するクラス
   class Parser
     def self.run(src)
@@ -195,7 +197,7 @@ module Lam
         # 変数参照
         with(varname & Symbol){
           unless env.include?(varname)
-            raise "変数#{varname}が定義されていません"
+            raise Error, "変数#{varname}が定義されていません"
           end
 
           Gcc.new([Op[:LD, 0, env.index(varname)]])
@@ -246,6 +248,7 @@ module Lam
           [[:lambda, [varname], transform(body)],
            transform(expr)]
         }
+
         with(_[:let, defs, body]){
           raise "malformed let: #{program.inspect}" if !defs.is_a?(Array) || defs.any?{|x| !x.is_a?(Array) || x.length != 2}
           varnames = defs.map(&:first)
@@ -255,7 +258,7 @@ module Lam
         }
 
         with(_[head, *args]){
-          [head, args.map{|x| transform(x)}]
+          [head, *args.map{|x| transform(x)}]
         }
 
         with(_){ program }

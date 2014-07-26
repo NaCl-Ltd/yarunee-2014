@@ -7,6 +7,13 @@ if ARGV.size == 0
   exit
 end
 
-src = ARGF.read
-program = Lam::Parser.run(src)
-puts Lam::Compiler.compile(program.first)
+begin
+  src = ARGF.read
+  program = Lam::Parser.run(src)
+  puts Lam::Compiler.compile(program.first)
+rescue Lam::Error => ex
+  warn ex.message
+rescue RParsec::ParserException => ex
+  warn "パースエラー: #{ex.message}"
+end
+
