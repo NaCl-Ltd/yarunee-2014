@@ -1,6 +1,14 @@
 require 'pattern-match'
+require 'sexp'
 
 module Lam
+  # S-式の文字列をlam ASTに変換するクラス
+  class Parser
+    def self.run(src)
+      return SExpressionParser.parse(src)
+    end
+  end
+
   # gccプログラムの1つの命令を表すクラス
   #
   # op :: シンボル(:LDC等)

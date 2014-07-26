@@ -8,6 +8,5 @@ if ARGV.size == 0
 end
 
 src = ARGF.read
-program = eval(src)
-
+program = Lam::Parser.run(src)
 puts Lam::Compiler.compile(program)
