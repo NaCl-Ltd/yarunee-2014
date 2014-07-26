@@ -1,4 +1,4 @@
-(cons 0 (lambda (s w) (debug (car (cdr (car (cdr w)))))))
+(cons 0 (lambda (s w) (car (cdr (car (cdr w))))))
 
 ; 最終的に以下を出力する
 ; LDC  0
