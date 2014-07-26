@@ -264,7 +264,18 @@ Fortunately we do have the original documentation of the processor which describ
 
 == Control register and program code layout
 
+データとコードのために、マシンは論理的に分けられたアドレス空間をもっています。
+%cレジスタはインストラクションポインタで、次に実行されるべき命令を指しています。
+プログラムは小さいアドレスから大きいアドレスに向かって並べられます。
+インストラクションポインタ上のほとんどの命令の効果は、単にその値をインクリメントすることです。
+
 == Data stack and register
+
+データスタックは、計算の間の中間データを保存したり、関数呼び出しの値をreturnするのに使われます。
+それは論理的に連続したスタックです。
+%sレジスタはスタックのトップを指しています。
+多くの命令はデータを単にスタックにpopしたりpushしたりするだけです。
+例えば、ADD命令は2つの整数値をpopして合計をpushします。
 
 == Control stack and register
 
