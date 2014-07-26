@@ -1,0 +1,31 @@
+; 壁にぶつかったら避けるやつ
+; (cons 0
+(
+  (lambda (s w)
+    ((lambda (is_empty_pos_f add_pos_f current_pos_f pos_f w s)
+      ; ダウン可能か？
+      (if (is_empty_pos_f add_pos_f current_pos_f pos_f w (cons 0 1))
+        (cons s 2)
+        ; アップ可能か？
+        (if (is_empty_pos_f add_pos_f current_pos_f pos_f w (cons 0 -1))
+          (cons s 0)
+          ; 右に行けるか？
+          (if (is_empty_pos_f add_pos_f current_pos_f pos_f w (cons 1 0))
+            (cons s 1)
+            ; 左に行くしかない
+            (cons s 3))))
+      )
+      ; is_empty_pos
+      (lambda (add_pos_f current_pos_f pos_f world dir_cons)
+        (if (> (pos_f (add_pos_f (current_pos_f world) dir_cons)) 0)
+          1 0))
+      ; define add_pos
+      (lambda (pos dir)
+        (cons (+ (car pos) (car dir)) (+ (cdr pos) (cdr dir))))
+      ; define current pos(ダミー)
+      (lambda (world) (cons 10 10))
+      ; define pos（ダミー）
+      (lambda (xy) 1)
+      w
+      s));)
+1 1)
