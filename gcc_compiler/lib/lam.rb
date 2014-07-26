@@ -130,13 +130,35 @@ module Lam
 
     def compile(e, env)
       match(e){
+        # 整数
         with(Integer){
           Gcc.new([Op[:LDC, e]])
         }
+        [ [:+, :ADD],
+          [:-, :SUB],
+          [:*, :MUL],
+          [:/, :DIV],
+        ].each do |sym, opname|
+          with(_[sym, ex, ey]){
+            compile(ex, env) +
+            compile(ey, env) +
+            Gcc.new([Op[opname]])
+          }
+        end
+        
+        # コンスセル
         with(_[:cons, ex, ey]){
           compile(ex, env) +
           compile(ey, env) +
           Gcc.new([Op[:CONS]])
+        }
+        with(_[:car, ex]){
+          compile(ex, env) +
+          Gcc.new([Op[:CAR]])
+        }
+        with(_[:cdr, ex]){
+          compile(ex, env) +
+          Gcc.new([Op[:CDR]])
         }
 
         # 変数参照
@@ -186,7 +208,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [[:lambda, [:x], :x], 1]
+    [:+, 1, 2]
   )
   pp ops
   puts "--"
