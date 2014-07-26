@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift "#{__dir__}/../lib"
+require 'lam'
+
+if ARGV.size == 0
+  puts "usage: lam foo.lam"
+  exit
+end
+
+src = ARGF.read
+program = eval(src)
+
+puts Lam::Compiler.compile(program)
