@@ -6,6 +6,11 @@ TESTS_ = <<EOD
 LDC 1
 RTN
 --
+-1
+:
+LDC -1
+RTN
+--
 (+ 1 2)
 :
 LDC 1
