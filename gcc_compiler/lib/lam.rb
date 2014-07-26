@@ -28,7 +28,7 @@ module Lam
         "#<#{@op}>"
       else
         sargs = @args.map{|x|
-          if x.is_a?(Op) then "func" else x.inspect end
+          if x.is_a?(Gcc) then "func" else x.inspect end
         }.join(', ')
 
         return "#<#{@op}[#{sargs}]>"
@@ -60,8 +60,14 @@ module Lam
     attr_reader :ops
 
     def +(other)
-      raise TypeError unless other.is_a?(Gcc)
-      Gcc.new(@ops + other.ops)
+      case other
+      when Gcc
+        Gcc.new(@ops + other.ops)
+      when Array
+        Gcc.new(@ops + other)
+      else
+        raise TypeError
+      end
     end
 
     def lineno
@@ -94,8 +100,7 @@ module Lam
     end
     
     def compile_main(e)
-      body = compile(e)
-      return body + Gcc.new([Op[:RTN]])
+      return compile(e) + [Op[:RTN]]
     end
 
     def compile(e)
@@ -106,14 +111,21 @@ module Lam
         with(_[:cons, ex, ey]){
           compile(ex) +
           compile(ey) +
-          Gcc.new([Op[:CONS]])
+          [Op[:CONS]]
         }
 
         with(_[:lambda, params, body]){
-          cbody = compile(body) +
-                  Gcc.new([Op[:RTN]])
+          cbody = compile(body) + [Op[:RTN]]
 
-          Gcc.new([Op[:LDF, cbody]]) 
+          Gcc.new([Op[:LDF, cbody]])
+        }
+
+        with(_[:if, cond, expr1, expr2]){
+          cexpr1 = compile(expr1) + [Op[:JOIN]]
+          cexpr2 = compile(expr2) + [Op[:JOIN]]
+
+          compile(cond) +
+          [Op[:SEL, cexpr1, cexpr2]]
         }
 
         with(_){
@@ -128,7 +140,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [:cons, 0, [:lambda, [], [:cons, 0, 1]]]
+    [:if, 0, 1, 2]
   )
   pp ops
   puts "--"
