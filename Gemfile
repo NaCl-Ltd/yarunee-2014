@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'rake'
 gem 'pattern-match'
 gem 'rspec'
 gem 'sexp'
