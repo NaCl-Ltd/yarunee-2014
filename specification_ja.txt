@@ -279,6 +279,11 @@ Fortunately we do have the original documentation of the processor which describ
 
 == Control stack and register
 
+コントロールスタックは関数呼び出しのreturn情報を保存するのに使われます。
+リターンアドレスと環境フレームポインタです。
+それは論理的に連続したスタックです。
+複雑な制御フローの命令のみがコントロールスタックとレジスタに影響を与えます。詳細はSEL/JOINやAP/RAP/RTNを見てください。
+
 == Environment frames and register
 
 == Data heap and data values
