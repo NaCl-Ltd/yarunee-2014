@@ -179,10 +179,10 @@ module Lam
       *defs, main = exprs
 
       # defineをパースする
-      libdefs = defs.map{|d|
+      global_variables = defs.map{|d|
         match(d){
-          with(_[:define, _[name, *params], body]){
-            [name, [:lambda, params, body]]
+          with(_[:define, name, val]){
+            [name, val]
           }
           with(_){
             raise Error, "malformed define: #{d.inspect}"
@@ -190,19 +190,21 @@ module Lam
         }
       }
 
-      if libdefs.empty?
-        newmain = main
-      else
-        newmain = [:let, libdefs, main]
-      end
-
-      ast = MacroTransformer.new.transform(newmain)
-      new.compile_main(ast).emit
+      ast = MacroTransformer.new.transform(main)
+      new.compile_main(ast, global_variables).emit
     end
     
-    def compile_main(e)
-      env = Env.new([])
-      return compile(e, env) + [Op[:RTN]]
+    def compile_main(e, global_variables)
+      env = Env.new(global_variables.map(&:first))
+      main = compile(e, env) + [Op[:RTN]]
+      return Gcc.new([Op[:DUM, global_variables.length]]) +
+        global_variables.map.with_index { |(name, val), i|
+          compile(val, env)
+        }.inject(Gcc.new([]), :+) + 
+        Gcc.new([Op[:LDF, main]]) +
+        Gcc.new([Op[:RAP, global_variables.length]]) +
+        [Op[:RTN]] +
+        main
     end
 
     def compile(e, env)
