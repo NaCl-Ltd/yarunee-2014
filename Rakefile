@@ -7,7 +7,7 @@ end
 
 desc "Run spec of gcc_compiler/"
 task :lam_spec do
-  chdir "gcc_compiler" do
+  chdir "code/gcc_compiler" do
     sh "bundle exec rspec"
   end
 end
