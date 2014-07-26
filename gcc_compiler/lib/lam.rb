@@ -1,6 +1,12 @@
 require 'pattern-match'
 
 module Lam
+  # gccプログラムの1つの命令を表すクラス
+  #
+  # op :: シンボル(:LDC等)
+  # args :: 引数
+  #   引数はたいていは数値(0, 1等)だが、
+  #   LDF命令などはLam::Gccのインスタンスを引数に取る
   class Op
     def self.[](op, *args)
       new(op, *args)
@@ -29,9 +35,12 @@ module Lam
       end
     end
 
+    # この命令を.gccファイルの形式に変換する
+    # 事前にGcc#linenoが設定されていなければならない
     def to_gcc
       sargs = @args.map{|x|
         if x.is_a?(Gcc)
+          raise "linenoが未設定です" if x.lineno.nil?
           x.lineno
         else
           x.to_s
@@ -42,6 +51,7 @@ module Lam
     end
   end
 
+  # gccプログラムの断片(=命令の列)を表すクラス
   class Gcc
     def initialize(ops)
       raise TypeError unless ops.is_a?(Array)
@@ -58,23 +68,25 @@ module Lam
       @ops.first.lineno
     end
 
-    # Opの配列をgccプログラム文字列に変換する
+    # gccプログラムを生成する
     def emit
+      # 全てのブロックをプログラム末尾に連結する
       blocks = @ops.flat_map(&:blocks)
       ops = @ops + blocks.flat_map(&:ops)
 
-      # 1. 各Opに行番号を振る
+      # 各Opに行番号を振る
       ops.each_with_index{|op, i|
         op.lineno = i
       }
 
-      # 2. 上から順に出力する
+      # 上から順に出力する
       return ops.map{|op|
         op.to_gcc + "\n"
       }.join
     end
   end
 
+  # lam ASTをLam::Gccに変換する
   class Compiler
     def self.compile(e)
       c = new
@@ -86,7 +98,6 @@ module Lam
       return body + Gcc.new([Op[:RTN]])
     end
 
-    # lam ASTをOpの配列に変換する
     def compile(e)
       match(e){
         with(Integer){
