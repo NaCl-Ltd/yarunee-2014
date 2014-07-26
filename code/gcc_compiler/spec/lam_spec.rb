@@ -35,6 +35,14 @@ JOIN
 LDC 9
 JOIN
 --
+((lambda () 1))
+:
+LDF 3
+AP 0
+RTN
+LDC 1
+RTN
+--
 ((lambda (x) x) 7)
 :
 LDC 7
