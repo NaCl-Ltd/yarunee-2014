@@ -71,6 +71,12 @@ CONS
 CONS
 CONS
 RTN
+--
+(debug 1)
+:
+LDC 1
+DBUG
+RTN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
