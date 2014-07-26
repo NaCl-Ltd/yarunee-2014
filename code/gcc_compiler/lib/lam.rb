@@ -151,13 +151,25 @@ module Lam
   class Env
     extend Forwardable
 
-    def initialize(varnames)
+    def initialize(varnames, parent = nil)
       @varnames = varnames
+      @parent = parent
     end
     def_delegators :@varnames, :include?, :index
 
     def merge(varnames)
       Env.new(@varnames + varnames)
+    end
+
+    def lookup(varname, n = 0)
+      i = @varnames.index(varname)
+      if i
+        return n, i
+      elsif @parent
+        @parent.lookup(varname, n + 1)
+      else
+        nil
+      end
     end
   end
 
@@ -226,15 +238,16 @@ module Lam
 
         # 変数参照
         with(varname & Symbol){
-          unless env.include?(varname)
+          n, i = env.lookup(varname)
+          unless n
             raise Error, "変数#{varname}が定義されていません"
           end
 
-          Gcc.new([Op[:LD, 0, env.index(varname)]])
+          Gcc.new([Op[:LD, n, i]])
         }
 
         with(_[:lambda, params, body]){
-          cbody = compile(body, Env.new(params)) +
+          cbody = compile(body, Env.new(params, env)) +
                   [Op[:RTN]]
 
           Gcc.new([Op[:LDF, cbody]])
