@@ -286,5 +286,21 @@ Fortunately we do have the original documentation of the processor which describ
 
 == Environment frames and register
 
+環境は関数のパラメータを含むローカル変数の格納に使われます。
+データスタックの上に環境から値を読むための命令があります。
+環境は、ローカル変数付きのローカルブロックや関数のような高級言語におけるネストされた変数スコープで使われるフレームのチェインから成ります。
+
+環境は2つのスタック構造よりも複雑です。
+contiguous stackというよりは、環境フレームのチェインから成ります。
+各フレームはその親フレームへのポインタを含んでいます。
+事実、フレームのチェインはスタックほど厳しくありません: フレームの生存期間は単純なLIFFOスタックの順番とは違います。
+フレームはハードウェアGCによって管理されているためです。
+
+各フレームは親フレームとゼロか多くのデータ値のポインタからなります。
+%eレジスタはローカルフレームを差します。
+一般に環境フレームのチェインの一連の要求として、マシンはローカルフレームまたはその親フレームのいずれかから値を読むための機能を持っています。
+
+(We believe in the real hardware this feature was implemented in microcode, with internal registers to cache the outermost frame and a fixed number of the inner most frames for quick access).
+
 == Data heap and data values
 
