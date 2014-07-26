@@ -269,7 +269,7 @@ module Lam
         with(_[func, *args]){
           cargs = args.map{|arg|
             compile(arg, env)
-          }.inject(:+)
+          }.inject(Gcc.new([]), :+)
 
           cargs +
           compile(func, env) +
