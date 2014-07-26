@@ -290,6 +290,11 @@ module Lam
           Gcc.new([Op[:DBUG]])
         }
 
+        with(_[:break, ex]){
+          compile(ex, env) +
+          Gcc.new([Op[:BRK]])
+        }
+
         # 変数参照
         with(varname & Symbol){
           n, i = env.lookup(varname)

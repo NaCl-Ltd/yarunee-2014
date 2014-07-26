@@ -104,6 +104,12 @@ LD 1 0
 RTN
 LDC 1
 RTN
+--
+(break 1)
+:
+LDC 1
+BRK
+RTN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
