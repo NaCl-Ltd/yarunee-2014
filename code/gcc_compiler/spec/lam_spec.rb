@@ -90,15 +90,15 @@ RTN
 (define (g) f)
 1
 :
-LDF 4
-LDF 6
-AP 1
+DUM 2
+LDF 8
+LDF 10
+LDF 12
+RAP 2
 RTN
 LDC 1
 RTN
-LDF 10
-LDF 12
-AP 1
+LDC 1
 RTN
 LD 1 0
 RTN

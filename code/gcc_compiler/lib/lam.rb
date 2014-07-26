@@ -277,6 +277,8 @@ module Lam
     def compile_main(e, global_variables)
       env = Env.new(global_variables.map(&:first))
       main = compile(e, env) + [Op[:RTN]]
+      return main if global_variables.empty?
+
       return Gcc.new([Op[:DUM, global_variables.length]]) +
         global_variables.map.with_index { |(name, val), i|
           compile(val, env)
