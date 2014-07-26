@@ -191,8 +191,8 @@ module Lam
       # defineをパースする
       libdefs = defs.map{|d|
         match(d){
-          with(_[:define, _[name, *params], body]){
-            [name, [:lambda, params, body]]
+          with(_[:define, _[fname, *params], fbody]){
+            [fname, params, fbody]
           }
           with(_){
             raise Error, "malformed define: #{d.inspect}"
@@ -212,7 +212,11 @@ module Lam
       if libdefs.empty?
         newmain = main
       else
-        newmain = [:let, libdefs, main]
+        newmain = libdefs.reverse.inject(main){|prog, libdef|
+          fname, params, fbody = *libdef
+          [[:lambda, [fname], prog],
+           [:lambda, params, fbody]]
+        }
       end
 
       Lam.d(newmain.pretty_inspect)

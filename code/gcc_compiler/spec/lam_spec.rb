@@ -86,18 +86,23 @@ LDC 1
 DBUG
 RTN
 --
-(define (f x) x)
-(f 1)
+(define (f) 1)
+(define (g) f)
+1
 :
 LDF 4
 LDF 6
 AP 1
 RTN
-LD 0 0
+LDC 1
+RTN
+LDF 10
+LDF 12
+AP 1
+RTN
+LD 1 0
 RTN
 LDC 1
-LD 0 0
-AP 1
 RTN
 EOD
 
