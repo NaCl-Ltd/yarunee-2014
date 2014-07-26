@@ -198,7 +198,7 @@ module Lam
       # else
       #   return op2
       # end
-      retun op2
+      return op2
     end
   end
 
