@@ -136,8 +136,8 @@ module Lam
   # lam ASTをLam::Gccに変換する
   class Compiler
     def self.compile(e)
-      c = new
-      c.compile_main(e).emit
+      ast = MacroTransformer.new.transform(e)
+      new.compile_main(ast).emit
     end
     
     def compile_main(e)
@@ -237,14 +237,41 @@ module Lam
       }
     end
   end
+
+  # マクロを展開する
+  class MacroTransformer
+    def transform(program)
+      match(program){
+        with(_[:let1, varname, expr, body]){
+          [[:lambda, [varname], transform(body)],
+           transform(expr)]
+        }
+        with(_[:let, defs, body]){
+          raise "malformed let: #{program.inspect}" if !defs.is_a?(Array) || defs.any?{|x| !x.is_a?(Array) || x.length != 2}
+          varnames = defs.map(&:first)
+          values = defs.map(&:last)
+          [[:lambda, varnames, transform(body)],
+           *values.map{|x| transform(x)}]
+        }
+
+        with(_[head, *args]){
+          [head, args.map{|x| transform(x)}]
+        }
+
+        with(_){ program }
+      }
+    end
+  end
 end
 
 if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
-  ops = c.compile_main(
-    [:<=, 1, 2]
-  )
+  prog = [:let, [[:x, 1], [:y, 2]], :x]
+  ast = Lam::MacroTransformer.new.transform(prog)
+  pp ast
+  puts "--"
+  ops = c.compile_main(ast)
   pp ops
   puts "--"
   puts ops.emit
