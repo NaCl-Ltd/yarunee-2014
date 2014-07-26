@@ -236,6 +236,11 @@ module Lam
           Gcc.new([Op[:CDR]])
         }
 
+        with(_[:debug, ex]){
+          compile(ex, env) +
+          Gcc.new([Op[:DBUG]])
+        }
+
         # 変数参照
         with(varname & Symbol){
           n, i = env.lookup(varname)
