@@ -7,7 +7,7 @@ module Lam
 
   def self.compile(src)
     program = Lam::Parser.run(src)
-    return Lam::Compiler.compile(program.first)
+    return Lam::Compiler.compile(program)
   end
 
   # S-式の文字列をlam ASTに変換するクラス
@@ -175,8 +175,28 @@ module Lam
 
   # lam ASTをLam::Gccに変換する
   class Compiler
-    def self.compile(e)
-      ast = MacroTransformer.new.transform(e)
+    def self.compile(exprs)
+      *defs, main = exprs
+
+      # defineをパースする
+      libdefs = defs.map{|d|
+        match(d){
+          with(_[:define, _[name, *params], body]){
+            [name, [:lambda, params, body]]
+          }
+          with(_){
+            raise Error, "malformed define: #{d.inspect}"
+          }
+        }
+      }
+
+      if libdefs.empty?
+        newmain = main
+      else
+        newmain = [:let, libdefs, main]
+      end
+
+      ast = MacroTransformer.new.transform(newmain)
       new.compile_main(ast).emit
     end
     

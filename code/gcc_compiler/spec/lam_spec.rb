@@ -85,6 +85,20 @@ RTN
 LDC 1
 DBUG
 RTN
+--
+(define (f x) x)
+(f 1)
+:
+LDF 4
+LDF 6
+AP 1
+RTN
+LD 0 0
+RTN
+LDC 1
+LD 0 0
+AP 1
+RTN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
