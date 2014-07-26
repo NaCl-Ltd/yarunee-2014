@@ -5,6 +5,11 @@ require 'forwardable'
 module Lam
   class Error < StandardError; end
 
+  def self.compile(src)
+    program = Lam::Parser.run(src)
+    return Lam::Compiler.compile(program.first)
+  end
+
   # S-式の文字列をlam ASTに変換するクラス
   class Parser
     def self.run(src)
@@ -74,16 +79,20 @@ module Lam
       if @op == :INLINE
         return @args.join
       end
-      sargs = @args.map{|x|
-        if x.is_a?(Gcc)
-          raise "linenoが未設定です" if x.lineno.nil?
-          x.lineno
-        else
-          x.to_s
-        end
-      }.join(' ')
+      if @args.empty?
+        sargs = ''
+      else
+        sargs = ' ' + @args.map{|x|
+          if x.is_a?(Gcc)
+            raise "linenoが未設定です" if x.lineno.nil?
+            x.lineno
+          else
+            x.to_s
+          end
+        }.join(' ')
+      end
 
-      return "#{@op} #{sargs}"
+      return "#{@op}#{sargs}"
     end
   end
 

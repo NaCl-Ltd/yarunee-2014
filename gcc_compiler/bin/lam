@@ -9,8 +9,7 @@ end
 
 begin
   src = ARGF.read
-  program = Lam::Parser.run(src)
-  puts Lam::Compiler.compile(program.first)
+  puts Lam.compile(src)
 rescue Lam::Error => ex
   warn ex.message
 rescue RParsec::ParserException => ex
