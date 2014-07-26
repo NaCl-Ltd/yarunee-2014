@@ -39,6 +39,15 @@ RTN
 LD 0 0
 RTN
 --
+(lambda (x) (lambda (y) x))
+:
+LDF 2
+RTN
+LDF 4
+RTN
+LD 1 0
+RTN
+--
 (+ 7 (inline "DBG\nSTOP"))
 :
 LDC 7
