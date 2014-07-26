@@ -23,3 +23,10 @@ $ bundle exec ./lam lambdaman.lam > ../solution/lambdaman.gcc
 * tadashirenato: Tadashi Renato
 * shugomaeda: Shugo Maeda
 * nishidayuya: Yuya.Nishida.
+
+## Development
+
+Automatically build and set GCC code to clipboard.
+```sh
+$ bundle exec guard
+```
