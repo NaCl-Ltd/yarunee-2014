@@ -6,6 +6,10 @@ clip = (xclip_command == "" ? [`which pbcopy`.chomp] :
 
 ignore %r{/.#}
 
+guard :bundler do
+  watch('Gemfile')
+end
+
 guard :shell do
   watch(/(.*).lam\z/) do |m|
     path = m[0]
