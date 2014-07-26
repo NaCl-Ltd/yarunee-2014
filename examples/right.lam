@@ -1,12 +1,15 @@
-[:cons, 0, [:lambda, ["s", "w"], [:cons, 0, 1]]]
+; 右へ移動する
+(cons 0 (lambda (s w) (cons 0 1)))
 
-# 以下を出力する
-# LDC  0
-# LDF  4
-# CONS
-# RTN
-# LDC  0
-# LDC  1
-# CONS
-# RTN
+; ASTは次のようになる
+; [:cons, 0, [:lambda, [:s, :w], [:cons, 0, 1]]]
 
+; 最終的に以下を出力する
+; LDC  0
+; LDF  4
+; CONS
+; RTN
+; LDC  0
+; LDC  1
+; CONS
+; RTN
