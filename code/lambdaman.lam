@@ -8,11 +8,11 @@
   (cons (+ (car c1) (car c2)) (+ (cdr c1) (cdr c2))))
 
 ; マップ上の指定されたマスの情報を取得するサンプル
-(define (lsearch self x li) (if (= x 0) (car li) (self self (- x 1) (cdr li))))
-(define (search x y map) (lsearch lsearch y (lsearch lsearch x map)))
+(define (lsearch self y li) (if (= y 0) (car li) (self self (- y 1) (cdr li))))
+(define (search y x map) (lsearch lsearch x (lsearch lsearch y map)))
 
 ; 指定した(x,y)の位置の数値を取得 map_pos（TODO: dummy）
-(define (map_pos xy map) (search (car xy) (cdr xy) map))
+(define (map_pos xy map) (search (cdr xy) (car xy) map))
 
 ; 指定した方向のスペースが空いているか？
 (define (is_empty_pos world dir_cons)
