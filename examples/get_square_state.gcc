@@ -1,11 +1,13 @@
 ; マップ上の指定されたマスの情報を取得するサンプル
 (
-  (lambda (x y search map) (search search y (search search x map)))
-    1
-    2
-    (lambda (self x li) (
-      if (= x 0) (car li) (self self (- x 1) (cdr li)) 
-    ))
-    (list (list 1 2 3) (list 4 5 6))
+  (lambda (x y map) (
+    (lambda (search) (search search y (search search x map)))
+      (lambda (self x li) (
+        if (= x 0) (car li) (self self (- x 1) (cdr li)) 
+      ))
+  ))
+  1
+  2
+  (list (list 1 2 3) (list 4 5 6))
 
 )
