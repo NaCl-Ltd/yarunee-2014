@@ -165,6 +165,17 @@ module Lam
             Gcc.new([Op[opname]])
           }
         end
+        [
+          [:<,   :CGT],
+          [:<=,  :CGTE],
+        ].each do |sym, opname|
+          # 引数の順序を入れ替えて、CGT/CGTEにコンパイルする
+          with(_[sym, ey, ex]){
+            compile(ex, env) +
+            compile(ey, env) +
+            Gcc.new([Op[opname]])
+          }
+        end
         
         # コンスセル
         with(_[:cons, ex, ey]){
@@ -232,7 +243,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [:>=, 1, 2]
+    [:<=, 1, 2]
   )
   pp ops
   puts "--"
