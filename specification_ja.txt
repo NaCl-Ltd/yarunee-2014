@@ -221,6 +221,19 @@ lightning roundではあなたのLambda-Manと審判から提供されたゴー�
 
 = Lambda-Man CPU
 
+我々はプロセッサのISA（バスアーキテクチャ）とアセンブリコードのいくつかのビットを含むLambda-Man AIチームによるプログラミング環境に関するいくつかのドキュメントを修復することができました。
+我々もまたLambda-Man AIチームとLISP狂信者とLISPのフォームを知っている。しかし残念なことにLISPコードもそのコンパイラも見つけることができませんでした。
+
+LamCoの"General Compute Coprocessor" (GCC)はどちらかといえば型にはまらなく-for its time-洗練されたCoprocessorです。
+それはLISPコンパイラのために設計されたように見えます。
+直交する命令セットというよりは、（我々が思うに）コンパイラにとって有用な、やや特別な命令の正しい数値を持っています。
+
+We did however find a handwritten note by one of the engineers indicating that someone had written a compiler from a variant of Pascal, albeit with some limitations.
+
+Fortunately we do have the original documentation of the processor which describes the instructions and operation in detail, though sadly not very much on how it was intended to be used by a compiler.
+
+この節より下に我々のコメントに沿ってオリジナルドキュメントからの抜粋を含んでいます。
+
 == General Architecture
 
 マシンはスタックベースで、3つのスタックが異なる目的で使われます。
