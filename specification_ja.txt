@@ -876,9 +876,8 @@ It is 0 when no power pill is active.
   * n > 0: power pill mode: the number of game ticks remaining while the
            power pill will will be active
 
-The status of all the ghosts is a list with the status for each ghost.
-The list is in the order of the ghost number, so each ghost always appears
-in the same location in the list.
+全てのゴーストの状態は、各ゴーストの状態を持ったリストです。
+そのリストは、ゴーストの番号順になっています。つまり、各ゴーストはリストの同じ位置に常にあらわれます。
 
 The status for each ghost is a 3-tuple consisting of
   1. the ghost's vitality
@@ -896,8 +895,8 @@ The Ghosts' and Lambda-Man's direction is an enumeration:
   * 2: down;
   * 3: left.
 
-The status of the fruit is a number which is a countdown to the expiry of
-the current fruit, if any.
+フルーツの状態はフルーツの消滅を示すカウントダウンの番号です。
+if any.
   * 0: no fruit present;
   * n > 0: fruit present: the number of game ticks remaining while the
            fruit will will be present.
