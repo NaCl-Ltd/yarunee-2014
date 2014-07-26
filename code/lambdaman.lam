@@ -1,15 +1,30 @@
-; 右へ移動する
-(cons 0 (lambda (s w) (cons 0 1)))
-
-; ASTは次のようになる
-; [:cons, 0, [:lambda, [:s, :w], [:cons, 0, 1]]]
-
-; 最終的に以下を出力する
-; LDC  0
-; LDF  4
-; CONS
-; RTN
-; LDC  0
-; LDC  1
-; CONS
-; RTN
+; 壁にぶつかったら避けるシンプルなもの
+(cons 0
+(
+  (lambda (state world)
+    ((lambda (is_empty_pos plus_cons current_pos map_pos)
+      ; ダウン可能か？
+      (if (is_empty_pos map_pos plus_cons current_pos world (cons 0 1))
+        (cons state 2)
+        ; アップ可能か？
+        (if (is_empty_pos map_pos plus_cons current_pos world (cons 0 -1))
+          (cons state 0)
+          ; 右に行けるか？
+          (if (is_empty_pos map_pos plus_cons current_pos world (cons 1 0))
+            (cons state 1)
+            ; 左に行くしかない
+            (cons state 3))))
+      )
+      ; 関数定義
+      ; is_empty_pos
+      (lambda (map_pos plus_cons current_pos world dir_cons)
+        (if (> (map_pos (plus_cons (current_pos world) dir_cons)) 0)
+          1 0))
+      ; cons+cons=cons
+      (lambda (c1 c2)
+        (cons (+ (car c1) (car c2)) (+ (cdr c1) (cdr c2))))
+      ; 現在位置を取得
+      (lambda (world) (car (cdr (car (cdr world)))))
+      ; 指定した(x,y)の位置の数値を取得 map_pos（TODO: dummy）
+      (lambda (xy) 1)
+))))
