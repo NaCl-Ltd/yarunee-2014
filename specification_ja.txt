@@ -218,3 +218,11 @@ lightning roundではあなたのLambda-Manと審判から提供されたゴー�
 簡単なマップは小さくてゴーストも少なくpower pillもたくさん現れます。
 難しいマップは大きく、たくさんゴーストがいてpower pillもなかなか現れません。
 マップの最大サイズは256*256です。
+
+= Lambda-Man CPU
+
+== General Architecture
+
+== CPU Registers
+
+== Memory stacks
