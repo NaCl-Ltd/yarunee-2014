@@ -1,0 +1,17 @@
+LDC  0
+LDF  4
+CONS
+RTN
+
+
+LD  0 1 ; access world(?)
+CDR     ; access and ignores map(?)
+CAR     ; access and retrieves Λ-man status
+CDR     ; access and ignores Λ-man vitality(?)
+CAR     ; access and retrieves Λ-man's current X,Y position
+DBUG    ; debug
+
+LDC  0  ; requirement to start move command
+LDC  1  ; move ( 0 , 1 , 2 , 3 )
+CONS
+RTN
