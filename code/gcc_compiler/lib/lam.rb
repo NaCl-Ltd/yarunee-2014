@@ -307,7 +307,7 @@ module Lam
         # => (cons 1 (cons 2 (cons 3 0)))
         with(_[:list, *values]){
           values.reverse.inject(0){|b, a|
-            [:cons, a, b]
+            [:cons, transform(a), b]
           }
         }
 
