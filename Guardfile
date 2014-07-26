@@ -6,7 +6,15 @@ clip = (xclip_command == "" ? [`which pbcopy`.chomp] :
 
 ignore %r{/.#}
 
+guard :bundler do
+  watch('Gemfile')
+end
+
 guard :shell do
+  watch(%r{\Acode/gcc_compiler/(lib|spec)/.*\.rb\z}) do
+    system("rake lam_spec")
+  end
+
   watch(/(.*).lam\z/) do |m|
     path = m[0]
     puts("processing: #{path}")
