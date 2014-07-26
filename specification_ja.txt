@@ -307,3 +307,11 @@ contiguous stackというよりは、環境フレームのチェインから成�
 == Examples
 
 == The processor/co-processor interface
+
+== Lambda-Man AI interface
+
+== Example
+
+== Resource constraints
+
+== Errors
