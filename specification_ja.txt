@@ -458,6 +458,39 @@ Note that when it says that it returns a function it doesn’t mean a code addre
 
 それに関する我々の知っていることはLDFとAP命令を見てください。
 
+
+世界の状態は次のようなエンコードがされています:
+
+A 4-tuple consisting of
+
+1. The map;
+2. the status of Lambda-Man;
+3. the status of all the ghosts;
+4. the status of fruit at the fruit location.
+
+マップは2Dグリッドで表現するリストのリスト(row-major)によってエンコードされています。
+An enumeration represents the contents of each grid cell:
+
+  * 0: Wall (`#`)
+  * 1: Empty (`<space>`)
+  * 2: Pill 
+  * 3: Power pill
+  * 4: Fruit location
+  * 5: Lambda-Man starting position
+  * 6: Ghost starting position
+
+
+For example, this map
+
+###
+#..
+
+is encoded as
+
+[ [ 0, 0, 0 ]
+, [ 0, 2, 2 ]
+]
+
 == Example
 
 == Resource constraints
