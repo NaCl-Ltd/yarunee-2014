@@ -1,0 +1,13 @@
+(cons 0 (lambda (s w) (debug (car (cdr (car (cdr w)))))))
+
+; 最終的に以下を出力する
+; LDC  0
+; LDF  4
+; CONS
+; RTN
+; LD  0 1
+; CDR
+; CAR
+; CDR
+; CAR
+; RTN
