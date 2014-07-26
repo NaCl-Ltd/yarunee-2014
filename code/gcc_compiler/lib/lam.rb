@@ -57,9 +57,18 @@ module Lam
       @op, @args = op, args
       @lineno = nil
       @comment = nil
+      @tailcall_optimizable = false
+      @sel = sel
     end
+    attr_accessor :op
     attr_accessor :lineno
     attr_accessor :comment
+    attr_writer :tailcall_optimizable
+    attr_accessor :sel # JOINに対応するSEL
+    
+    def tailcall_optimizable?
+      return @tailcall_optimizable
+    end
 
     # このOpがもつblockの一覧を返す
     def blocks
@@ -146,14 +155,47 @@ module Lam
       ops = @ops + blocks.flat_map(&:ops)
 
       # 各Opに行番号を振る
-      ops.each_with_index{|op, i|
+      ops = ops.map.with_index{|op, i|
+        if op.lineno
+          # linenoがすでにセットされている場合はdupしないと行番号が狂う。
+          op = op.dup
+        end
         op.lineno = i
+        op
       }
+
+      # 末尾呼び出しの最適化
+      optimize_tailcall(ops)
 
       # 上から順に出力する
       return ops.map{|op|
         op.to_gcc + "\n"
       }.join
+    end
+
+    private
+   
+    # 末尾呼び出しの最適化
+    def optimize_tailcall(ops)
+      ops.each{|op|
+        if op.op == :AP && op.tailcall_optimizable?
+          op2 = get_next_op(ops, op)
+          if op2.op == :RTN
+            op.op = :TAP
+          end
+        end
+      }
+    end
+
+    # 次の命令を返す。
+    # 次の命令がJOINの場合は対応するSELの次の命令を返す。
+    def get_next_op(ops, op)
+      op2 = ops[op.lineno + 1]
+      if op2.op == :JOIN
+        return get_next_op(ops, op2.sel)
+      else
+        return op2
+      end
     end
   end
 
@@ -164,8 +206,15 @@ module Lam
     def initialize(varnames, parent = nil)
       @varnames = varnames
       @parent = parent
+      @captured = false
     end
-    def_delegators :@varnames, :include?, :index
+    def_delegators :@varnames, :include?, :index, :length
+
+    attr_writer :captured
+
+    def captured?
+      return @captured
+    end
 
     def merge(varnames)
       Env.new(@varnames + varnames)
@@ -309,6 +358,8 @@ module Lam
         }
 
         with(_[:lambda, params, body]){
+          env.captured = true
+
           cbody = compile(body, Env.new(params, env)) +
                   [Op[:RTN]]
 
@@ -316,11 +367,16 @@ module Lam
         }
 
         with(_[:if, cond, expr1, expr2]){
-          cexpr1 = compile(expr1, env) + [Op[:JOIN]]
-          cexpr2 = compile(expr2, env) + [Op[:JOIN]]
+          join1 = Op[:JOIN]
+          join2 = Op[:JOIN]
+          cexpr1 = compile(expr1, env) + [join1]
+          cexpr2 = compile(expr2, env) + [join2]
 
-          compile(cond, env) +
-          Gcc.new([Op[:SEL, cexpr1, cexpr2]])
+          sel = Op[:SEL, cexpr1, cexpr2]
+          join1.sel = sel
+          join2.sel = sel
+
+          compile(cond, env) + Gcc.new([sel])
         }
 
         with(_[:inline, str]){
@@ -333,9 +389,14 @@ module Lam
             compile(arg, env)
           }.inject(Gcc.new([]), :+)
 
+          ap = Op[:AP, args.length]
+          if !env.captured? && args.length <= env.length
+            ap.tailcall_optimizable = true
+          end
+
           cargs +
           compile(func, env) +
-          Gcc.new([Op[:AP, args.length]])
+          Gcc.new([ap])
         }
 
         with(_){
