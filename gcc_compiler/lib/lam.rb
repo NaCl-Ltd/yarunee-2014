@@ -46,7 +46,14 @@ module Lam
 
     # このOpがもつblockの一覧を返す
     def blocks
-      return @args.grep(Gcc)
+      return @args.flat_map{|arg|
+        case arg
+        when Gcc
+          [arg] + arg.blocks
+        else
+          []
+        end
+      }
     end
 
     def inspect
@@ -87,6 +94,11 @@ module Lam
       @ops = ops
     end
     attr_reader :ops
+
+    # このGccがもつblockの一覧を返す
+    def blocks
+      @ops.flat_map(&:blocks)
+    end
 
     def +(other)
       case other
