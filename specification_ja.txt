@@ -412,6 +412,52 @@ main関数の引数や戻り値の方はアプリケーションに依存する�
 
 == Lambda-Man AI interface
 
+LAMBDAMANは主に2つの引数を持った関数です。
+
+ 1. the initial state of the world, encoded as below
+ 2. undocumented
+
+It returns a pair containing:
+
+ 1. the initial AI state
+ 2. the AI step function (closure)
+
+The AI step function has two arguments:
+
+ 1. the current AI state
+ 2. the current state of the world, encoded as below
+
+It returns a pair containing:
+
+ 1. the current AI state
+ 2. the current state of the world, encoded as below
+
+It returns a pair containing:
+
+ 1. the current AI state
+ 2. the move, encoded as below
+
+The encoding of the AI state is private. The host should pass the current
+AI state on each step but not otherwise inspect it.
+
+つまりこれは、AIはゲームの現在の状態を見てLambda-Manの移動方向を返す関数で実装することを我々に教えている。
+
+（訳注: 自信ない）
+AIは完全にステートレスである必要はありません。しかしながら、各ステップで使ったり更新したりできるprivate stateを使うことができます。
+The AI does not have to be completely stateless however, it is able to make use of a private state that it can use and update on each step.
+
+それは、返した新しい状態によって動きます。そしてホスト(game mechanics)は次のステップでのAI関数の状態を渡すことを期待しています。
+初期AI状態は初期エントリポイント(the `main' function)から来ます。
+
+少しばかり特殊なことがあります。それは、`main'は他の``well known''アドレスよりはむしろ、AI step functionを返します。
+これは実は慣習です。`main'はよく知られたアドレスとホストがmainによって返されるべきと要求する他のエントリポイントを持っています。
+
+（訳注: 自信ない）
+関数を返すということは、コードアドレスを意味しませんが``CLOSURE cell''
+Note that when it says that it returns a function it doesn’t mean a code address but a ``CLOSURE cell''.
+
+それに関する我々の知っていることはLDFとAP命令を見てください。
+
 == Example
 
 == Resource constraints
