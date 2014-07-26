@@ -191,11 +191,14 @@ module Lam
     # 次の命令がJOINの場合は対応するSELの次の命令を返す。
     def get_next_op(ops, op)
       op2 = ops[op.lineno + 1]
-      if op2.op == :JOIN
-        return get_next_op(ops, op2.sel)
-      else
-        return op2
-      end
+      # GCCが制御スタックにJOINのタグを積む仕様のため、JOINがある場合は
+      # 末尾呼び出しの最適化をすると制御スタックにタグが残る。
+      # if op2.op == :JOIN
+      #   return get_next_op(ops, op2.sel)
+      # else
+      #   return op2
+      # end
+      retun op2
     end
   end
 
@@ -391,7 +394,7 @@ module Lam
 
           ap = Op[:AP, args.length]
           # envがlambdaでcaptureされている場合や、引数の数が現在の関数の引数
-          # の数より大きい場合は、末尾最適化を行ってはいけない。
+          # の数より大きい場合は、末尾呼び出しの最適化を行ってはいけない。
           if !env.captured? && args.length <= env.length
             ap.tailcall_optimizable = true
           end
