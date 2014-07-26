@@ -1,0 +1,88 @@
+LDC 0
+LDC 0
+LDF 23
+AP 2
+RTN
+LD  0 0       ; -add_pos- current pos (x,y)
+CAR           ; pop x
+LD  0 1       ; add pos (dx, dy)
+CAR
+ADD           ; x+dx
+LD  0 0
+CDR
+LD  0 1
+CDR
+ADD           ; y+dy
+CONS          ; return (x+dx,y+dy)
+RTN
+LDC 10        ; -current_pos-
+LDC 10
+CONS
+RTN
+LDC 1         ; -pos-
+RTN
+LDC  0
+LDC  2        ; -step-check down-, var down cost
+LD   0 1      ; var world
+LDF  17       ; var current_pos closure
+AP   1        ; call current_pos(world)
+LDC  0        ;
+LDC  1        ;
+CONS          ; (0, 1) cons
+LDF  5
+AP   2        ; call add_pos((x,y), (0,1))
+LDF  21
+AP   1        ; call pos((x,y+1))
+LDC  0
+CGT           ; 0 < pos value (check wall)
+SEL  87 40
+CONS
+RTN
+LDC  0        ; -step-check up-, var up cost
+LDC  0
+LD   0 1      ; var world
+LDF  17       ; var current_pos closure
+AP   1        ; call current_pos(world)
+LDC  0        ;
+LDC  -1       ;
+CONS          ; (0, -1) cons
+LDF  5
+AP   2        ; call add_pos((x,y), (0,1))
+LDF  21
+AP   1        ; call pos((x,y-1))
+LDC  0
+CGT           ; 0 < pos value (check wall)
+SEL  87 56
+JOIN          ; back to first
+LDC  0        ; -step-check left-, var left cost
+LDC  3
+LD   0 1      ; var world
+LDF  17       ; var current_pos closure
+AP   1        ; call current_pos(world)
+LDC  -1        ;
+LDC  0        ;
+CONS          ; (-1, 0) cons
+LDF  5
+AP   2        ; call add_pos((x,y), (-1,0))
+LDF  21
+AP   1        ; call pos((x,y))
+LDC  0
+CGT           ; 0 < pos value (check wall)
+SEL  87 72    ; FIX
+JOIN          ; back to second
+LDC  0        ; -step-check right-, var down cost
+LDC  1
+LD   0 1      ; var world
+LDF  17       ; var current_pos closure
+AP   1        ; call current_pos(world)
+LDC  1        ;
+LDC  0        ;
+CONS          ; (1, 0) cons
+LDF  5
+AP   2        ; call add_pos((x,y), (1,0))
+LDF  21
+AP   1        ; call pos((x+1,y))
+LDC  0
+CGT           ; 0 < pos value (check wall)
+SEL  87 87    ; FIX
+JOIN
