@@ -11,6 +11,10 @@ guard :bundler do
 end
 
 guard :shell do
+  watch(%r{\Acode/gcc_compiler/(lib|spec)/.*\.rb\z}) do
+    system("rake lam_spec")
+  end
+
   watch(/(.*).lam\z/) do |m|
     path = m[0]
     puts("processing: #{path}")
