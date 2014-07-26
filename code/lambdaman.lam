@@ -19,6 +19,7 @@
   (if (> (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 0)
     1 0))
 
+; main
 (cons 0
   (lambda (state world)
     ; ダウン可能か？

@@ -16,6 +16,11 @@ task :lam_spec do
   end
 end
 
+desc "Run spec of ai"
+task :ai_spec do
+  sh "bundle exec ruby simulator/run_spec.rb"
+end
+
 desc "Build solution file"
 task :solution do
   chdir "code" do
