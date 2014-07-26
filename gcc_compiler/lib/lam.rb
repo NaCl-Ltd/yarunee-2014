@@ -101,6 +101,17 @@ module Lam
     end
   end
 
+  # 束縛されている変数の列を表す
+  class Env
+    def initialize(varnames)
+      @varnames = varnames
+    end
+
+    def merge(varnames)
+      Env.new(@varnames + varnames)
+    end
+  end
+
   # lam ASTをLam::Gccに変換する
   class Compiler
     def self.compile(e)
@@ -109,32 +120,50 @@ module Lam
     end
     
     def compile_main(e)
-      return compile(e) + [Op[:RTN]]
+      env = Env.new([])
+      return compile(e, env) + [Op[:RTN]]
     end
 
-    def compile(e)
+    def compile(e, env)
       match(e){
         with(Integer){
           Gcc.new([Op[:LDC, e]])
         }
         with(_[:cons, ex, ey]){
-          compile(ex) +
-          compile(ey) +
+          compile(ex, env) +
+          compile(ey, env) +
           [Op[:CONS]]
         }
 
+        # 変数参照
+        with(Symbol){
+          raise "TODO"
+        }
+
         with(_[:lambda, params, body]){
-          cbody = compile(body) + [Op[:RTN]]
+          cbody = compile(body, env.merge(params)) +
+                  [Op[:RTN]]
 
           Gcc.new([Op[:LDF, cbody]])
         }
 
         with(_[:if, cond, expr1, expr2]){
-          cexpr1 = compile(expr1) + [Op[:JOIN]]
-          cexpr2 = compile(expr2) + [Op[:JOIN]]
+          cexpr1 = compile(expr1, env) + [Op[:JOIN]]
+          cexpr2 = compile(expr2, env) + [Op[:JOIN]]
 
-          compile(cond) +
+          compile(cond, env) +
           [Op[:SEL, cexpr1, cexpr2]]
+        }
+
+        # 関数適用
+        with(_[func, *args]){
+          cargs = args.map{|arg|
+            compile(arg, env)
+          }.inject(:+)
+
+          cargs +
+          compile(func, env) +
+          [Op[:AP, args.length]]
         }
 
         with(_){
@@ -149,7 +178,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [:if, 0, 1, 2]
+    [[:lambda, [:x], 7], 8]
   )
   pp ops
   puts "--"
