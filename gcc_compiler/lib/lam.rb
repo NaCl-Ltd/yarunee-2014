@@ -155,6 +155,9 @@ module Lam
           [:-, :SUB],
           [:*, :MUL],
           [:/, :DIV],
+          [:"=", :CEQ],
+          [:>,   :CGT],
+          [:>=,  :CGTE],
         ].each do |sym, opname|
           with(_[sym, ex, ey]){
             compile(ex, env) +
@@ -229,7 +232,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [:+, 1, 2]
+    [:>=, 1, 2]
   )
   pp ops
   puts "--"
