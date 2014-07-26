@@ -189,10 +189,13 @@ module Lam
       *defs, main = exprs
 
       # defineをパースする
-      libdefs = defs.map{|d|
+      global_variables = defs.map{|d|
         match(d){
-          with(_[:define, _[fname, *params], fbody]){
-            [fname, params, fbody]
+          with(_[:define, _[name, *params], body]){
+            [name, [:lambda, params, body]]
+          }
+          with(_[:define, name, val]){
+            [name, val]
           }
           with(_){
             raise Error, "malformed define: #{d.inspect}"
@@ -209,29 +212,27 @@ module Lam
       # TODO: main内で使われてない関数はlibdefsから除くようにするとよいかも
       # 使われているかの判定は単純に正規表現とかでよいので
 
-      if libdefs.empty?
-        newmain = main
-      else
-        newmain = libdefs.reverse.inject(main){|prog, libdef|
-          fname, params, fbody = *libdef
-          [[:lambda, [fname], prog],
-           [:lambda, params, fbody]]
-        }
-      end
-
-      Lam.d(newmain.pretty_inspect)
+      Lam.d(main.pretty_inspect)
       Lam.d("--")
 
-      ast = MacroTransformer.new.transform(newmain)
+      ast = MacroTransformer.new.transform(main)
       Lam.d(ast.pretty_inspect)
       Lam.d("--")
 
-      new.compile_main(ast).emit
+      new.compile_main(ast, global_variables).emit
     end
     
-    def compile_main(e)
-      env = Env.new([])
-      return compile(e, env) + [Op[:RTN]]
+    def compile_main(e, global_variables)
+      env = Env.new(global_variables.map(&:first))
+      main = compile(e, env) + [Op[:RTN]]
+      return Gcc.new([Op[:DUM, global_variables.length]]) +
+        global_variables.map.with_index { |(name, val), i|
+          compile(val, env)
+        }.inject(Gcc.new([]), :+) + 
+        Gcc.new([Op[:LDF, main]]) +
+        Gcc.new([Op[:RAP, global_variables.length]]) +
+        [Op[:RTN]] +
+        main
     end
 
     def compile(e, env)
