@@ -1,5 +1,6 @@
 require 'pattern-match'
 require 'sexp'
+require 'forwardable'
 
 module Lam
   # S-式の文字列をlam ASTに変換するクラス
@@ -103,9 +104,12 @@ module Lam
 
   # 束縛されている変数の列を表す
   class Env
+    extend Forwardable
+
     def initialize(varnames)
       @varnames = varnames
     end
+    def_delegators :@varnames, :include?, :index
 
     def merge(varnames)
       Env.new(@varnames + varnames)
@@ -132,16 +136,20 @@ module Lam
         with(_[:cons, ex, ey]){
           compile(ex, env) +
           compile(ey, env) +
-          [Op[:CONS]]
+          Gcc.new([Op[:CONS]])
         }
 
         # 変数参照
-        with(Symbol){
-          raise "TODO"
+        with(varname & Symbol){
+          unless env.include?(varname)
+            raise "変数#{varname}が定義されていません"
+          end
+
+          Gcc.new([Op[:LD, 0, env.index(varname)]])
         }
 
         with(_[:lambda, params, body]){
-          cbody = compile(body, env.merge(params)) +
+          cbody = compile(body, Env.new(params)) +
                   [Op[:RTN]]
 
           Gcc.new([Op[:LDF, cbody]])
@@ -152,7 +160,7 @@ module Lam
           cexpr2 = compile(expr2, env) + [Op[:JOIN]]
 
           compile(cond, env) +
-          [Op[:SEL, cexpr1, cexpr2]]
+          Gcc.new([Op[:SEL, cexpr1, cexpr2]])
         }
 
         # 関数適用
@@ -163,7 +171,7 @@ module Lam
 
           cargs +
           compile(func, env) +
-          [Op[:AP, args.length]]
+          Gcc.new([Op[:AP, args.length]])
         }
 
         with(_){
@@ -178,7 +186,7 @@ if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
   ops = c.compile_main(
-    [[:lambda, [:x], 7], 8]
+    [[:lambda, [:x], :x], 1]
   )
   pp ops
   puts "--"
