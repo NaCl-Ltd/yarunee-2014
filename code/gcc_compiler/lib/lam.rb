@@ -1,6 +1,7 @@
 require 'pattern-match'
 require 'sexp'
 require 'forwardable'
+require 'pp'
 
 module Lam
   class Error < StandardError; end
@@ -8,6 +9,10 @@ module Lam
   def self.compile(src)
     program = Lam::Parser.run(src)
     return Lam::Compiler.compile(program)
+  end
+
+  def self.d(str)
+    puts str if ENV["D"]
   end
 
   # S-式の文字列をlam ASTに変換するクラス
@@ -189,6 +194,11 @@ module Lam
           }
         }
       }
+      match(main){
+        with(_[:define, *rest]){
+          raise Error, "mainの処理がありません"
+        }
+      }
 
       if libdefs.empty?
         newmain = main
@@ -196,7 +206,13 @@ module Lam
         newmain = [:let, libdefs, main]
       end
 
+      Lam.d(newmain.pretty_inspect)
+      Lam.d("--")
+
       ast = MacroTransformer.new.transform(newmain)
+      Lam.d(ast.pretty_inspect)
+      Lam.d("--")
+
       new.compile_main(ast).emit
     end
     
