@@ -181,6 +181,9 @@ module Lam
       # defineをパースする
       global_variables = defs.map{|d|
         match(d){
+          with(_[:define, _[name, *params], body]){
+            [name, [:lambda, params, body]]
+          }
           with(_[:define, name, val]){
             [name, val]
           }
