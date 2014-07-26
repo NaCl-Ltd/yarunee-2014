@@ -22,6 +22,9 @@ module Lam
 
     def self.convert_recursive(ast)
       case ast
+      when /\A-\d+\z/
+        # 負数が文字列になることへの対処
+        return ast.to_s.to_i
       when String
         # SExpressionParserが文字列"foo"を'["a", "b", "c"]'に
         # してしまうことへの対処
