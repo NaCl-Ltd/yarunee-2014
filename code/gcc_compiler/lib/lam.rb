@@ -271,6 +271,9 @@ module Lam
   end
 
   # マクロを展開する
+  #
+  # NOTE: 現在はマクロ展開結果にはマクロが使えません
+  # (使いたい場合は、変化がなくなるまで繰り返しtransformを適用するようにする。)
   class MacroTransformer
     def transform(program)
       match(program){
@@ -285,6 +288,14 @@ module Lam
           values = defs.map(&:last)
           [[:lambda, varnames, transform(body)],
            *values.map{|x| transform(x)}]
+        }
+
+        # (list 1 2 3)
+        # => (cons 1 (cons 2 (cons 3 0)))
+        with(_[:list, *values]){
+          values.reverse.inject(0){|b, a|
+            [:cons, a, b]
+          }
         }
 
         with(_[head, *args]){

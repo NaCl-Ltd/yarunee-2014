@@ -46,6 +46,17 @@ DBG
 STOP
 ADD
 RTN
+--
+(list 7 8 9)
+:
+LDC 7
+LDC 8
+LDC 9
+LDC 0
+CONS
+CONS
+CONS
+RTN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
