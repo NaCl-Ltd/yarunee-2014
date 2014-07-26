@@ -7,34 +7,30 @@
 (define (plus_cons c1 c2)
   (cons (+ (car c1) (car c2)) (+ (cdr c1) (cdr c2))))
 
+; マップ上の指定されたマスの情報を取得するサンプル
+(define (lsearch self x li) (if (= x 0) (car li) (self self (- x 1) (cdr li))))
+(define (search x y map) (lsearch lsearch y (lsearch lsearch x map)))
+
 ; 指定した(x,y)の位置の数値を取得 map_pos（TODO: dummy）
-(define (map_pos xy) 1)
+(define (map_pos xy map) (search (car xy) (cdr xy) map))
 
 ; 指定した方向のスペースが空いているか？
-(define (is_empty_pos map_pos world dir_cons)
+(define (is_empty_pos world dir_cons)
   (if (> (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 0)
     1 0))
 
 (cons 0
   (lambda (state world)
-    (let1 map_pos
-      (lambda (x y map) (
-        (lambda (search) (search search y (search search x map)))
-        (lambda (self x li) (
-          if (= x 0) (car li) (self self (- x 1) (cdr li))
-          ))
-        ))
-
     ; ダウン可能か？
-    (if (is_empty_pos map_pos world (cons 0 1))
+    (if (is_empty_pos world (cons 0 1))
       (cons state 2)
       ; アップ可能か？
-      (if (is_empty_pos map_pos world (cons 0 -1))
+      (if (is_empty_pos world (cons 0 -1))
         (cons state 0)
         ; 右に行けるか？
-        (if (is_empty_pos map_pos world (cons 1 0))
+        (if (is_empty_pos world (cons 1 0))
           (cons state 1)
           ; 左に行くしかない
           (cons state 3))))
     )
-))
+)
