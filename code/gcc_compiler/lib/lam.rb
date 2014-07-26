@@ -166,9 +166,9 @@ module Lam
       if i
         return n, i
       elsif @parent
-        @parent.lookup(varname, n + 1)
+        return @parent.lookup(varname, n + 1)
       else
-        nil
+        return nil
       end
     end
   end
