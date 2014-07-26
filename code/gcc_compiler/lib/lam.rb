@@ -198,7 +198,11 @@ module Lam
         with(_[:define, *rest]){
           raise Error, "mainの処理がありません"
         }
+        with(_){}
       }
+
+      # TODO: main内で使われてない関数はlibdefsから除くようにするとよいかも
+      # 使われているかの判定は単純に正規表現とかでよいので
 
       if libdefs.empty?
         newmain = main
