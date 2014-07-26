@@ -5,6 +5,7 @@ module Lam
   # S-式の文字列をlam ASTに変換するクラス
   class Parser
     def self.run(src)
+      src = src.gsub(/;.*$/, "") # ;から後ろはコメントとして除去する。
       return SExpressionParser.parse(src)
     end
   end
