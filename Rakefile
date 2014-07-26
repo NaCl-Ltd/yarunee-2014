@@ -16,6 +16,17 @@ task :lam_spec do
   end
 end
 
+desc "Build solution file"
+task :solution do
+  chdir "code" do
+    sh "bundle exec ./lam lambdaman.lam > ../solution/lambdaman.gcc"
+  end
+end
+
+task :check_all_committed do
+  sh "git diff --exit-code --quiet"
+end
+
 task :tag do
   sh "git tag #{VERSION}"
 end
@@ -25,4 +36,4 @@ task :archive do
 end
 
 desc "Release"
-task release: %i(tag archive)
+task release: %i(solution check_all_committed tag archive)
