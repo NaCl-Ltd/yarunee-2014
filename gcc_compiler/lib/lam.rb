@@ -190,6 +190,10 @@ module Lam
             Gcc.new([Op[opname]])
           }
         end
+        with(_[:int?, ex]){
+          compile(ex, env) +
+          Gcc.new([Op[:ATOM]])
+        }
         
         # コンスセル
         with(_[:cons, ex, ey]){
@@ -282,7 +286,7 @@ end
 if $0 == __FILE__
   require 'pp'
   c = Lam::Compiler.new
-  prog = [:let, [[:x, 1], [:y, 2]], :x]
+  prog = [:int?, 1]
   ast = Lam::MacroTransformer.new.transform(prog)
   pp ast
   puts "--"
