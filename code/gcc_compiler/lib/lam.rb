@@ -56,8 +56,10 @@ module Lam
     def initialize(op, *args)
       @op, @args = op, args
       @lineno = nil
+      @comment = nil
     end
     attr_accessor :lineno
+    attr_accessor :comment
 
     # このOpがもつblockの一覧を返す
     def blocks
@@ -100,6 +102,9 @@ module Lam
             x.to_s
           end
         }.join(' ')
+      end
+      if @comment
+        sargs += " ; #{@comment}"
       end
 
       return "#{@op}#{sargs}"
@@ -288,7 +293,9 @@ module Lam
             raise Error, "変数#{varname}が定義されていません"
           end
 
-          Gcc.new([Op[:LD, n, i]])
+          op = Op[:LD, n, i]
+          op.comment = "varref #{varname}"
+          Gcc.new([op])
         }
 
         with(_[:lambda, params, body]){

@@ -110,7 +110,11 @@ module Lam
   describe 'Lam' do
     TESTS.each do |scm, gcc|
       it "should compile #{scm.inspect}" do
-        expect(Lam.compile(scm)).to eq(gcc)
+        result = Lam.compile(scm).lines.map{|l|
+          # コメントを削除する
+          l.sub(/ ;.*/, "")
+        }.join
+        expect(result).to eq(gcc)
       end
     end
   end
