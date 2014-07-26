@@ -390,6 +390,8 @@ module Lam
           }.inject(Gcc.new([]), :+)
 
           ap = Op[:AP, args.length]
+          # envがlambdaでcaptureされている場合や、引数の数が現在の関数の引数
+          # の数より大きい場合は、末尾最適化を行ってはいけない。
           if !env.captured? && args.length <= env.length
             ap.tailcall_optimizable = true
           end
