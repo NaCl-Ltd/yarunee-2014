@@ -7,7 +7,21 @@ module Lam
   class Parser
     def self.run(src)
       src = src.gsub(/;.*$/, "") # ;から後ろはコメントとして除去する。
-      return SExpressionParser.parse(src)
+      raw_ast = SExpressionParser.parse(src)
+      return convert_recursive(raw_ast)
+    end
+
+    private
+
+    def self.convert_recursive(ast)
+      case ast
+      when String
+        return eval(ast).join
+      when Array
+        return ast.map{|x| convert_recursive(x)}
+      else
+        return ast
+      end
     end
   end
 
@@ -48,6 +62,9 @@ module Lam
     # この命令を.gccファイルの形式に変換する
     # 事前にGcc#linenoが設定されていなければならない
     def to_gcc
+      if @op == :INLINE
+        return @args.join
+      end
       sargs = @args.map{|x|
         if x.is_a?(Gcc)
           raise "linenoが未設定です" if x.lineno.nil?
@@ -183,6 +200,10 @@ module Lam
 
           compile(cond, env) +
           Gcc.new([Op[:SEL, cexpr1, cexpr2]])
+        }
+
+        with(_[:inline, str]){
+          Gcc.new([Op[:INLINE, str]])
         }
 
         # 関数適用
