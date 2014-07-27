@@ -21,4 +21,15 @@ guard :shell do
     system("bundle exec ./lam #{Shellwords.escape(path)} | #{Shellwords.join(clip)}")
     puts("output to clipboard.")
   end
+
+  watch(%r{\Acode/ghc_compiler/(lib|spec)/.*\.rb\z}) do
+    system("rake ghc_spec")
+  end
+
+  watch(/(.*).aghc\z/) do |m|
+    path = m[0]
+    puts("processing: #{path}")
+    system("bundle exec ./ghcc #{Shellwords.escape(path)} | #{Shellwords.join(clip)}")
+    puts("output to clipboard.")
+  end
 end

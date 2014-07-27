@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift "#{__dir__}/../lib"
+require 'ghc'
+
+puts Ghc.compile(ARGF.read)

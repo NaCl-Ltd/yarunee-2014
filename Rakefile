@@ -16,6 +16,13 @@ task :lam_spec do
   end
 end
 
+desc "Run spec of ghc_compiler/"
+task :ghc_spec do
+  chdir "code/ghc_compiler" do
+    sh "bundle exec rspec"
+  end
+end
+
 desc "Run spec of ai"
 task :ai_spec do
   sh "bundle exec ruby simulator/run_spec.rb"
