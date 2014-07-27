@@ -38,7 +38,7 @@ JOIN
 ((lambda () 1))
 :
 LDF 3
-AP 0
+TAP 0
 RTN
 LDC 1
 RTN
@@ -93,7 +93,7 @@ RTN
 DUM 2
 LDF 8
 LDF 10
-LDF 12
+LDF 6
 RAP 2
 RTN
 LDC 1
