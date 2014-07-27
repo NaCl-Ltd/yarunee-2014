@@ -37,6 +37,9 @@ desc "Build solution file"
 task :solution do
   chdir "code" do
     sh "bundle exec ./lam lambdaman.lam > ../solution/lambdaman.gcc"
+    4.times do |n|
+      sh "bundle exec ./ghcc ghost#{n}.aghc > ../solution/ghost#{n}.ghc"
+    end
   end
 end
 
