@@ -61,9 +61,22 @@
     )
   )
 )
+; 指定位置にゴーストがいるか
+(define (ghost_exists? world pos)
+  (any? (lambda (gpos) (is_equal_pos gpos pos))
+        (ghost_locations world)))
 ; フルーツが出ているか
 (define (fruits_appering? world)
   (> (cdr (cdr (cdr world))) 0))
+
+; 現在位置から指定した方向にghostが見えるか？
+(define (see_ghost? world dir_cons)
+  (see_ghost_from? (plus_cons (current_pos world) dir_cons) world dir_cons))
+; ある位置から指定した方向にghostが見えるか？
+(define (see_ghost_from? pos world dir_cons)
+  (cond ((= (map_pos pos (car world)) 0) false) ; 壁まで見た
+        ((ghost_exists? world pos) true)
+        (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons))))
 
 ; 現在位置から指定した方向にpillが見えるか？
 (define (see_pill? world dir_cons)
@@ -96,26 +109,29 @@
   (cond
     ( ; 同じ方向に行けるか
       (and
-        (is_safe_pos world (direction dir) (ghost_locations world))
-        (func world (direction dir))
-      )
+        (not (see_ghost? world (direction dir)))
+        (func world (direction dir)))
       (cons state dir)
     )
     ( ; 右折可能か？
-      (func world (direction (turn_right dir)))
+      (and
+        (not (see_ghost? world (direction (turn_right dir))))
+        (func world (direction (turn_right dir))))
       (cons state (turn_right dir))
     )
     ( ; 左折可能か？
-      (func world (direction (turn_left dir)))
+      (and
+        (not (see_ghost? world (direction (turn_left dir))))
+        (func world (direction (turn_left dir))))
       (cons state (turn_left dir))
     )
     ( ; 引き返せるか？
-      (func world (direction (turn_opposite dir)))
+      (and
+        (not (see_ghost? world (direction (turn_opposite dir))))
+        (func world (direction (turn_opposite dir))))
       (cons state (turn_opposite dir))
     )
-    (else default)
-  )
-)
+    (else default)))
 
 
 ; step関数
@@ -123,8 +139,9 @@
   ; pillを優先的に探索
   (search_round see_pill? world state (current_dir world)
     ; pillが周囲になければ壁のない方向へ
-    (search_round is_empty_pos world state (current_dir world) (current_dir world)))
-)
+    (search_round is_empty_pos world state (current_dir world)
+      ; デフォルトは前進
+      (current_dir world))))
 
 ; main
 (cons 0 step)
