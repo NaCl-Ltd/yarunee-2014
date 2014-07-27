@@ -89,11 +89,71 @@
 (define (turn_opposite dir)
   (if (> (+ dir 2) 3) (- dir 2) (+ dir 2)))
 
+(define (mod x y)
+    (- x (* (/ x y) y)))
+
+; 擬似ランダム(true/false)
+; とりあえず敵の位置をシードにしたもの
+(define (binrandom world)
+  (= 1 (mod (list-ref (car (ghost_locations world)) 0) 2)))
+
 ; 進む方向の探索関数
 ; 進んでよいか判定する関数と現在方向を受け取る
 ; 探索優先順位は、1.進む方向 2.90度曲がる方向 3.引き返す方向
 (define (search_round func world state dir default)
   (cond
+    ( ; 後ろ以外の2方向へ行けるか
+      (>
+        (fold + 0
+          (list
+            (if (and
+              (is_safe_pos world (direction dir) (ghost_locations world))
+              (func world (direction dir))
+            ) 1 0)
+            (if (func world (direction (turn_right dir))) 1 0)
+            (if (func world (direction (turn_left dir))) 1 0)
+          )
+        )
+        1
+      )
+      (if (binrandom world) ; 擬似ランダムな分岐
+        (cond
+          ( ; 同じ方向に行けるか
+            (and
+              (is_safe_pos world (direction dir) (ghost_locations world))
+              (func world (direction dir))
+            )
+            (cons state dir)
+          )
+          ( ; 右折可能か？
+            (func world (direction (turn_right dir)))
+            (cons state (turn_right dir))
+          )
+          ( ; 左折可能か？
+            (func world (direction (turn_left dir)))
+            (cons state (turn_left dir))
+          )
+          ( else default )
+        )
+        (cond
+          ( ; 右折可能か？
+            (func world (direction (turn_right dir)))
+            (cons state (turn_right dir))
+          )
+          ( ; 左折可能か？
+            (func world (direction (turn_left dir)))
+            (cons state (turn_left dir))
+          )
+          ( ; 同じ方向に行けるか
+            (and
+              (is_safe_pos world (direction dir) (ghost_locations world))
+              (func world (direction dir))
+            )
+            (cons state dir)
+          )
+        )
+      )
+    )
     ( ; 同じ方向に行けるか
       (and
         (is_safe_pos world (direction dir) (ghost_locations world))
