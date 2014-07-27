@@ -93,6 +93,12 @@ end
 (search 1 2 (list (list 1 2 3) (list 4 5 6)))
 => 6
 --
+(map_pos (cons 2 1) #{tuples[0]})
+=> 2
+--
+(map_pos (cons 2 3) #{tuples[0]})
+=> 2
+--
 (plus_cons (cons 1 2) (cons 1 2))
 => (2, 4)
 SPEC
