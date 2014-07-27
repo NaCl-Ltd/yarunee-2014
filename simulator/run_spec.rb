@@ -29,7 +29,7 @@ tuples = [
   #   #.\%#
   #   ##.##
   #   #####
-  "(list (list 0 0 0 0 0) (list 0 0 2 0 0) (list 0 2 1 4 0) (list 0 0 2 0 0) (list 0 0 0 0 0))",
+  "(list (list 0 0 0 0 0) (list 0 0 2 0 0) (list 0 2 5 4 0) (list 0 0 2 0 0) (list 0 0 0 0 0))",
 
   # The Lambda-Man status is a 5-tuple consisting of:
   #   1. Lambda-Man's vitality;
@@ -37,7 +37,7 @@ tuples = [
   #   3. Lambda-Man's current direction;
   #   4. Lambda-Man's remaining number of lives;
   #   5. Lambda-Man's current score.
-  "(list 4 (cons 11 16) 0 3 0)",
+  "(list 4 (cons 2 2) 0 3 0)",
 
   # The status for each ghost is a 3-tuple consisting of
   #   1. the ghost's vitality
@@ -75,7 +75,7 @@ end
 
 @spec = <<SPEC
 (current_pos #{get_world(tuples)})
-=> (11, 16)
+=> (2, 2)
 --
 (current_dir #{get_world(tuples)})
 => 0
