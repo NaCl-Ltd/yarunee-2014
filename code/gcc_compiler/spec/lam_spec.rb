@@ -192,8 +192,14 @@ TESTS = TESTS_.split(/^--.*$/).map{|x|
 }
 
 PARSER_TESTS = {
-  '(foo bar "baz" 1 -1)' => [[:foo, :bar, "baz", 1, -1]],
-  '"foo\nbar"' => ["foo\nbar"],
+  '0' => [0],
+  'foo' => [:foo],
+  'foo_bar' => [:foo_bar],
+  'foo-bar' => [:"foo-bar"],
+  '"bar"' => ["bar"],
+  '"baz\nquux"' => ["baz\nquux"],
+  '(foo-quux bar "baz" 1 -1)' => [[:"foo-quux", :bar, "baz", 1, -1]],
+  '("foo\nbar")' => [["foo\nbar"]],
   '(foo) (bar)' => [[:foo], [:bar]],
   "(foo) ; 説明\n  (bar)" => [[:foo], [:bar]],
   '(+ 1 2)' => [[:+, 1, 2]],
