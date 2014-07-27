@@ -11,7 +11,7 @@ guard :bundler do
 end
 
 guard :shell do
-  watch(%r{\Acode/gcc_compiler/(lib|spec)/.*\.rb\z}) do
+  watch(%r{\Acode/gcc_compiler/(lib|spec)/.*\.(rb|treetop)\z}) do
     system("rake lam_spec")
   end
 
