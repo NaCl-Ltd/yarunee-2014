@@ -78,10 +78,6 @@
                 row))
         danger_poss))
 
-; 指定位置にゴーストがいるか
-(define (ghost_exists? world pos)
-  (any? (lambda (gpos) (is_equal_pos gpos pos))
-        (ghost_locations world)))
 ; フルーツが出ているか
 (define (fruits_appering? world)
   (> (cdr (cdr (cdr world))) 0))
@@ -92,7 +88,6 @@
 ; ある位置から指定した方向にghostが見えるか？
 (define (see_ghost_from? pos world dir_cons danger_poss)
   (cond ((= (map_pos pos (car world)) 0) false) ; 壁まで見た
-        ;((ghost_exists? world pos) true)
         ((ghost_coming? danger_poss pos) true)
         (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons danger_poss))))
 
