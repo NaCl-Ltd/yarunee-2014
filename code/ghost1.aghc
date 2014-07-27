@@ -26,24 +26,128 @@ hlt            ; Stop.
 fickleend:
 
 
-; ランダム値が入っていたらjump
-mov a,d
-jgt (seedrandom),a,0
+; レジスタのクリア
+mov a,0
+mov b,0
+mov c,0
+mov d,0
+mov e,0
+mov f,0
 
-; ghostの位置をシードにする
-int 4
+; 目的地についていたら時間を潰す
+jgt (nop),[10],0
+
+int 3
+mov [0],a ; ghostのindex
 int 5
-add a,b
+mov [1],a ; ghostのX座標
+mov [2],b ; ghostのY座標
+mov a,[0]
+int 6
+mov [3],b ; ghostの向き
+int 1
+mov [4],a ; lambda-manのX座標
+mov [5],b ; lambda-manのY座標
+; [6] : 前回のlambda-manのx座標
+; [7] ; y座標
+; [8] ; 目的となるポジション: x
+; [9] ; 目的となるポジション: y
+; [10]; とどまっておくtick数
 
-; IN <- reg A seed
-; OUT -> reg A ランダムな数値
-seedrandom:
-mul a,61
-add a,5   ; (seed*61)+5
-and a,255 ; mod 256
+lookpos:
+mov c,[4]
+mov d,[5]
+sub c,[6]  ; lambdamanの前回からの差分を検知(x)
+sub d,[7]  ; 同上(y)
+mov [8],[4]
+mov [9],[5]
+mov a,4
+forlookpos:
+dec a
+add [8],c
+add [9],d
+jeq (forlookpos),a,0
+mov a,[8]
+mov b,[9]
 
-; d にシード値を格納
-mov d,a
-and a,3 ; 0b11でマスク
+horizontalcheck:
+mov a,[1] ; ghost x
+mov b,[8] ; lambda look x
+jgt (leftcheck),a,b
+jlt (rightcheck),a,b
+jeq (verticalcheck),0,0
+
+leftcheck:
+mov c,1   ; leftcheck done
+dec a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,3   ; 3 = left
+jeq (emit),0,0
+
+rightcheck:
+mov d,1   ; rightcheck done
+inc a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,1   ; 1 = right
+jeq (emit),0,0
+
+verticalcheck:
+mov a,[2] ; ghost y
+mov b,[9] ; lambda look y
+jgt (upcheck),a,b
+jlt (downcheck),a,b
+jeq (hold),0,0
+
+upcheck:
+mov e,1   ; upcheck done
+dec a
+int 7     ; map state
+jeq (upfallback),a,0  ; 0 = wall
+mov a,0   ; 0 = up
+jeq (emit),0,0
+
+upfallback:
+jeq (leftcheck),c,0
+jeq (rightcheck),d,0
+jeq (downcheck),f,0
+
+downcheck:
+mov f,1   ; downcheck done
+inc a
+int 7     ; map state
+jeq (downfallback),a,0  ; 0 = wall
+mov a,2   ; 2 = down
+jeq (emit),0,0
+
+downfallback:
+jeq (rightcheck),d,0
+jeq (leftcheck),c,0
+jeq (upcheck),e,0
+
+hold:
+mov [10], 10 ; 消費するtick数を設定
+jmp (nop)
+
+; その場でウロウロ
+nop:
+int 3
+int 5
+and a,1
+mov b,a
+mov a,2
+jeq 7,b,1
+mov a,0
+dec [10]  ; 消費するtick数
+jmp (emit)
+
+emit:
 int 0
+jmp (end)
+
+end:
+int 1
+mov [6],a ; 今回のlambda-manのX座標
+mov [7],b ; 今回のlambda-manのY座標
 hlt
