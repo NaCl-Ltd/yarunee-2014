@@ -100,7 +100,6 @@ library = ""
 library += File.read("./code/gcc_compiler/lam/prelude.lam")
 library += File.read("./code/lambdaman.lam")
 library.gsub!(/^;\s+main.*/m, "")
-puts library
 
 specs = []
 @spec.split(/^--.*$/).map{|x|
