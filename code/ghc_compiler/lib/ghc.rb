@@ -23,6 +23,11 @@ class Ghc
         labels[Regexp.last_match[1]]
       end
     end
-    return lines.each_with_index.map {|l, n| l + " ; #{n}\n"}.join
+    inverted_labels = labels.invert
+    return lines.each_with_index.map do |l, n|
+      label = inverted_labels[n]
+      label_description = label ? " #{label}:" : ""
+      l + " ; #{n}#{label_description}\n"
+    end.join
   end
 end
