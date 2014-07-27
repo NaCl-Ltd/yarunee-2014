@@ -1,8 +1,5 @@
 ; vim: set ft=scheme:
 
-(define (initial_world) (inline "LD 1 0"))
-(define (ghost_ais) (inline "LD 1 1"))
-
 ; 現在のpower pillモードの残りを返す
 (define (current_vit world) (car (car (cdr world))))
 
