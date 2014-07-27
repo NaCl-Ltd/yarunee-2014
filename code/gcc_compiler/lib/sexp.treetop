@@ -1,0 +1,53 @@
+grammar Sexp
+  rule expressions
+    (expression)* {
+      def to_a
+        return elements.map(&:to_a).compact
+      end
+    }
+  end
+
+  rule expression
+    integer / identifier / string / space? '(' body ')' space? {
+      def to_a
+        return elements[2].to_a
+      end
+    }
+  end
+
+  rule body
+    (expression / integer / identifier / string / space )* {
+      def to_a
+        return elements.map(&:to_a).compact
+      end
+    }
+  end
+
+  rule integer
+    ('+' / '-')? [0-9]+ {
+      def to_a
+        return text_value.to_i
+      end
+    }
+  end
+
+  rule string
+    '"' ([^"\\] / "\\" . )* '"' {
+      def to_a
+        return eval(text_value)
+      end
+    }
+  end
+
+  rule identifier
+    ('+' / '-' / '*' / '/' / '<=' / '>=' / '<' / '>' / [a-zA-Z\=\*] [a-zA-Z0-9_\=\*-]* '?'?) {
+      def to_a
+        return text_value.to_sym
+      end
+    }
+  end
+
+  rule space
+    [\s]+
+  end
+end

@@ -1,7 +1,9 @@
 require 'pattern-match'
-require 'sexp'
+require 'treetop'
 require 'forwardable'
 require 'pp'
+
+Treetop.load File.join(__dir__, "sexp.treetop")
 
 module Lam
   class Error < StandardError; end
@@ -19,25 +21,15 @@ module Lam
   class Parser
     def self.run(src)
       src = src.gsub(/;.*$/, "") # ;から後ろはコメントとして除去する。
-      raw_ast = SExpressionParser.parse(src)
-      return convert_recursive(raw_ast)
+      tree = SexpParser.new.parse(src)
+      return tree.to_a
     end
 
     private
 
-    def self.convert_recursive(ast)
-      case ast
-      when /\A-\d+\z/
-        # 負数が文字列になることへの対処
-        return ast.to_s.to_i
-      when String
-        # SExpressionParserが文字列"foo"を'["a", "b", "c"]'に
-        # してしまうことへの対処
-        return eval(ast).join
-      when Array
-        return ast.map{|x| convert_recursive(x)}
-      else
-        return ast
+    class ::Treetop::Runtime::SyntaxNode
+      def to_a
+        return nil
       end
     end
   end
