@@ -2,8 +2,30 @@
 (define true 1)
 (define false 0)
 
+; (fold + 0 (list 1 2 3))みたいにクロージャとして使いたい時のために
+; 組込命令を関数としても定義しておく。
+(define (+ x y) (+ x y))
+(define (- x y) (- x y))
+(define (* x y) (* x y))
+(define (/ x y) (/ x y))
+(define (= x y) (= x y))
+(define (> x y) (> x y))
+(define (>= x y) (>= x y))
+(define (< x y) (< x y))
+(define (<= x y) (<= x y))
+(define (cons x y) (cons x y))
+(define (car x) (car x))
+(define (cdr x) (cdr x))
+
 (define (not x)
   (if x false true))
 
 (define (null? x)
   (and (int? x) (= x 0)))
+
+(define (fold kons knil clist)
+  (if (null? clist)
+    kons
+    (fold kons (kons knil (car clist)) (cdr clist))))
+
+; vim: set filetype=lisp :
