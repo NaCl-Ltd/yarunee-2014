@@ -23,7 +23,16 @@ class Ghc
     end
 
     def inspect
-      "#<#{@opecode}#{@args.inspect unless @args.empty?}>"
+      sargs = ' ' + @args.map{|x|
+        match(x){
+          with(_[:reg, name]){ name }
+          with(_[:ref, name]){ "[#{name}]" }
+          with(_){ x.to_s }
+        }
+      }.join(',')
+      sargs = '' if @args.empty?
+
+      "#<#{@opecode}#{sargs}>"
     end
   end
 
@@ -65,7 +74,7 @@ class Ghc
     def dump
       Ghc.d("--")
       Ghc.d("registers: #{@registers.inspect}")
-      Ghc.d("mem: #{@mem.inspect}")
+      #Ghc.d("mem: #{@mem.inspect}")
       #Ghc.d("pc: #{@pc.inspect}")
     end
 
@@ -91,7 +100,7 @@ class Ghc
             set(pos, (value(pos) + 1) % 256)
             @pc += 1
           }
-          with(Op.(:DEC, _[_[:reg, reg]])){
+          with(Op.(:DEC, _[pos])){
             set(pos, (value(pos) - 1) % 256)
             @pc += 1
           }
