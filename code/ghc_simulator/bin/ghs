@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+$LOAD_PATH.unshift("#{__dir__}/../lib")
+require 'ghc'
+
+if ARGV.size == 0
+  puts "usage: #$0 foo.ghc"
+  exit
+end
+
+src = ARGF.read
+begin
+  Ghc.new.run(src)
+rescue Ghc::Error => ex
+  warn ex.message
+end
+
+
