@@ -67,9 +67,12 @@
   (let1 ghosts (car (cdr (cdr world)))
     (map (lambda (ghost)
            (let ((pos (car (cdr ghost)))
-                 (dir (cdr (cdr ghost))))
-             (list pos                                 ; ゴーストがいるマス
-                   (plus_cons pos (direction dir)))))  ; ゴーストが次に移動するマス
+                 (dir (cdr (cdr ghost)))
+                 (mode (car ghost)))
+             (if (= mode 0)
+               (list pos                                 ; ゴーストがいるマス
+                     (plus_cons pos (direction dir)))    ; ゴーストが次に移動するマス
+               (list (cons -1 -1)))))
       ghosts)))
 ; 指定位置にゴーストが来ようとしているか
 (define (ghost_coming? danger_poss pos)
