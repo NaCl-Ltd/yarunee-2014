@@ -61,6 +61,23 @@
     )
   )
 )
+; 危険な位置(ゴーストが来ようとしている位置)の一覧を返す
+; NOTE: 手抜きなので位置の二次元リストを返しています
+(define (danger_zone world)
+  (let1 ghosts (car (cdr (cdr world)))
+    (map (lambda (ghost)
+           (let ((pos (car (cdr ghost)))
+                 (dir (cdr (cdr ghost))))
+             (list pos                                 ; ゴーストがいるマス
+                   (plus_cons pos (direction dir)))))  ; ゴーストが次に移動するマス
+      ghosts)))
+; 指定位置にゴーストが来ようとしているか
+(define (ghost_coming? danger_poss pos)
+  (any? (lambda (row)
+          (any? (lambda (pos_) (is_equal_pos pos_ pos))
+                row))
+        danger_poss))
+
 ; 指定位置にゴーストがいるか
 (define (ghost_exists? world pos)
   (any? (lambda (gpos) (is_equal_pos gpos pos))
@@ -70,13 +87,14 @@
   (> (cdr (cdr (cdr world))) 0))
 
 ; 現在位置から指定した方向にghostが見えるか？
-(define (see_ghost? world dir_cons)
-  (see_ghost_from? (plus_cons (current_pos world) dir_cons) world dir_cons))
+(define (see_ghost? world dir_cons danger_poss)
+  (see_ghost_from? (plus_cons (current_pos world) dir_cons) world dir_cons danger_poss))
 ; ある位置から指定した方向にghostが見えるか？
-(define (see_ghost_from? pos world dir_cons)
+(define (see_ghost_from? pos world dir_cons danger_poss)
   (cond ((= (map_pos pos (car world)) 0) false) ; 壁まで見た
-        ((ghost_exists? world pos) true)
-        (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons))))
+        ;((ghost_exists? world pos) true)
+        ((ghost_coming? danger_poss pos) true)
+        (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons danger_poss))))
 
 ; 現在位置から指定した方向にpillが見えるか？
 (define (see_pill? world dir_cons)
@@ -114,10 +132,12 @@
 ; 進んでよいか判定する関数と現在方向を受け取る
 ; 探索優先順位は、1.進む方向 2.90度曲がる方向 3.引き返す方向
 (define (search_round func world state dir default)
+  (let1 danger_poss (danger_zone world)
   (let1 to_go?
     (lambda (dir)
       (and
-        (not (see_ghost? world (direction dir)))
+        ;(not (see_ghost? world (direction dir)))
+        (not (see_ghost? world (direction dir) danger_poss))
         (func world (direction dir))))
               
   (cond
@@ -178,8 +198,7 @@
       (to_go? (turn_opposite dir))
       (cons state (turn_opposite dir))
     )
-    (else default))))
-
+    (else default)))))
 
 ; step関数
 (define (step state world)
@@ -188,7 +207,7 @@
     ; pillが周囲になければ壁のない方向へ
     (search_round is_empty_pos world state (current_dir world)
       ; デフォルトは前進
-      (current_dir world))))
+      (cons 0 (current_dir world)))))
 
 ; main
 (cons 0 step)
@@ -205,10 +224,19 @@
 ;                        0)))))       ; score
 ;       (dummy_ghosts (list (cons 0          ; mode
 ;                           (cons (cons 1 1) ; pos
-;                                 0))))      ; dir
+;                                 0))        ; dir
+;                           (cons 0
+;                           (cons (cons 1 1)
+;                                 0))
+;                           (cons 0
+;                           (cons (cons 1 1)
+;                                 0))
+;                           (cons 0
+;                           (cons (cons 1 1)
+;                                 0))))
 ;       (dummy_fruit 0))
 ;   (let1 dummy_world (cons dummy_map
 ;                     (cons dummy_man
 ;                     (cons dummy_ghosts
 ;                           dummy_fruit)))
-;     (step (break 0) dummy_world)))
+;     (step 0 dummy_world)))
