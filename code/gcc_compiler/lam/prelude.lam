@@ -62,4 +62,11 @@
       (car clist)
       (list-ref (cdr clist) (- n 1)))))
 
+; aからbまでのリストを返す
+; (upto 0 3) ;=> (list 0 1 2 3)
+(define (upto a b)
+  (if (> a b)
+    nil
+    (cons a (upto (+ a 1) b))))
+
 ; vim: set filetype=lisp :
