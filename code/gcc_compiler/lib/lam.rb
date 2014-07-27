@@ -469,6 +469,35 @@ module Lam
             [[:lambda, [:x], [:if, :x, :x, y]], x]
           }
 
+          # (cond (a 1) (b 2) (else 3))
+          # => (if a 1
+          #      (if b 2 3))
+          with(_[:cond, *clauses]){
+            changed = true
+            if clauses.length == 0
+              raise "condの本体がありません"
+            end
+            clauses.each_with_index do |c, i|
+              if !c.is_a?(Array) || c.length != 2
+                raise "不正なcond節です：#{c.inspect}"
+              end
+              if c[0] == :else && i != clauses.length-1
+                raise "condのelse節は最後にしか書けません"
+              end
+            end
+            if clauses[-1][0] == :else
+              seed = transform1.(clauses[-1][1])
+              clauses.pop
+            else
+              seed = 0  # elseがない場合は0をデフォルト値とする
+            end
+            clauses.reverse.inject(seed){|sum, item|
+              [:if, transform1.(item[0]), 
+                transform1.(item[1]),
+                sum]
+            }
+          }
+
           # 以下はマクロ適用ではないため、changed = trueは行わない
           with(_[head, *args]){
             [transform1.(head), *args.map{|x| transform1.(x)}]

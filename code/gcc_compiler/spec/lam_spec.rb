@@ -110,6 +110,21 @@ RTN
 LDC 1
 BRK
 RTN
+--
+(cond (1 2) (3 4) (else 5))
+:
+LDC 1
+SEL 3 5
+RTN
+LDC 2
+JOIN
+LDC 3
+SEL 8 10
+JOIN
+LDC 4
+JOIN
+LDC 5
+JOIN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
