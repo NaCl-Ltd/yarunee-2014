@@ -1,5 +1,8 @@
 ; 壁にぶつかったら避けるシンプルなAI
 
+(define initial_world (inline "LD 1 0"))
+(define ghost_ais (inline "LD 1 1"))
+
 ; 現在位置を取得
 (define (current_pos world) (car (cdr (car (cdr world)))))
 
