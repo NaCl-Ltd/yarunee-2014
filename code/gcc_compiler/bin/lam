@@ -8,8 +8,9 @@ if ARGV.size == 0
 end
 
 begin
+  prelude = File.read("#{__dir__}/../lam/prelude.lam")
   src = ARGF.read
-  puts Lam.compile(src)
+  puts Lam.compile(prelude + src)
 rescue Lam::Error => ex
   warn ex.message
 rescue RParsec::ParserException => ex
