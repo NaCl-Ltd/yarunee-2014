@@ -12,6 +12,9 @@ class Ghc
         labels[name] = lines_without_label.length
         next
       end
+      if (md = /\A(\s*)jmp(\s+)(.*)/.match(l)) # jmp
+        l = md[1] + "jeq" + md[2] + md[3] + ",0,0" + md.post_match
+      end
       lines_without_label << l
     end
     label_names_regexp = /\((#{labels.keys.join("|")})\)/

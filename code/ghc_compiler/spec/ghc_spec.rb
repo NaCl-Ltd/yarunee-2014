@@ -37,5 +37,17 @@ mov a,1
     hlt
 OUTPUT
     end
+
+    it "should extract jmp" do
+      expect(Ghc.compile(<<INPUT)).to eq(<<OUTPUT)
+jmp 2
+mov a,0
+hlt
+INPUT
+jeq 2,0,0
+mov a,0
+hlt
+OUTPUT
+    end
   end
 end
