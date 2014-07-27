@@ -69,8 +69,9 @@ def get_world(tuples)
 end
 
 def update_tuples(tuples, index, tuple)
-  tuples[index] = tuple
-  return get_world(tuples)
+  copy_tuples = tuples.dup
+  copy_tuples[index] = tuple
+  return get_world(copy_tuples)
 end
 
 @spec = <<SPEC
