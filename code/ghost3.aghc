@@ -1,6 +1,27 @@
-; 最初の数ターンは気まぐれAI
-jeq (fickleend),[254],1
-jgt (fickle),[254],0
+;pillgardian.aghc
+;基本気まぐれでピルを見つけたら守る
+
+;レジスタ初期化
+mov c,0
+
+checkinit:
+int 3
+int 5
+mov c,a
+mov d,b
+int 3
+int 4
+jeq (init),a,c
+jeq (init),d,b
+jmp (checkinitend)
+init:
+mov [201],0
+mov c,0
+mov d,0
+mov e,0
+checkinitend:
+
+jeq (pillguard),[201],1
 mov [254],20
 fickle:
 mov a,255      ; A is the min value.
@@ -22,13 +43,39 @@ inc [b]        ; Increment corresponding count.
 dec [254]
 mov a,0
 mov b,0
-hlt            ; Stop.
 fickleend:
 
+checkpill:
+int 3
+int 5
+int 7
+jeq (detectpill),a,3 ; 3 = power pill
+hlt
 
-; lambda-manに近づこうとするAI
+existpill:
+mov a,[4]
+mov b,[5]
+int 7
+jeq (pillguard),a,3 ; 3 = power pill
+mov [4],0
+mov [5],0
+mov [201],0 ; pilguard disable
+jmp (end)
 
+; pilに近づこうとするAI
+detectpill:
+int 3
+int 5
+mov [4],a
+mov [5],b
+mov [201],1
+jmp (pillguard)
+
+; pill周りを周回
+pillguard:
 ; レジスタのクリア
+mov a,0
+mov b,0
 mov c,0
 mov d,0
 mov e,0
@@ -42,13 +89,10 @@ mov [2],b ; ghostのY座標
 mov a,[0]
 int 6
 mov [3],b ; ghostの向き
-int 1
-mov [4],a ; lambda-manのX座標
-mov [5],b ; lambda-manのY座標
 
 horizontalcheck:
 mov a,[1] ; ghost x
-mov b,[4] ; lambda x
+mov b,[4] ; pill x
 jgt (leftcheck),a,b 
 jlt (rightcheck),a,b
 jeq (verticalcheck),0,0
@@ -71,8 +115,8 @@ jeq (end),0,0
 
 verticalcheck:
 mov a,[2] ; ghost y
-mov b,[5] ; lambda y
-jgt (upcheck),a,b 
+mov b,[5] ; pill y
+jgt (upcheck),a,b
 jlt (downcheck),a,b
 jeq (end),0,0
 
