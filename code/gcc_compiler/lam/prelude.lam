@@ -28,4 +28,12 @@
     kons
     (fold kons (kons knil (car clist)) (cdr clist))))
 
+(define (fold-right kons knil clist)
+  (if (null? clist)
+    kons
+    (kons (car clist) (fold-right kons knil (cdr clist)))))
+
+(define (map proc clist)
+  (fold-right (lambda (x l) (cons (proc x) l)) nil clist))
+
 ; vim: set filetype=lisp :
