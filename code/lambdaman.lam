@@ -3,6 +3,9 @@
 ; 現在位置を取得
 (define (current_pos world) (car (cdr (car (cdr world)))))
 
+; 現在方向を取得
+(define (current_dir world) (car (cdr (cdr (car (cdr world))))))
+
 ; cons+cons=cons
 (define (plus_cons c1 c2)
   (cons (+ (car c1) (car c2)) (+ (cdr c1) (cdr c2))))
@@ -19,19 +22,29 @@
   (if (> (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 0)
     1 0))
 
+; 方向を表す単位ベクトル
+(define (direction dir)
+  (if (= dir 0) (cons 0 -1)
+    (if (= dir 1) (cons 1 0)
+      (if (= dir 2) (cons 0 1) (cons -1 0)))))
+
+; step関数
+(define (step state world)
+  ; 同じ方向に行けるか？
+  (if (is_empty_pos world (direction (current_dir world)))
+    (current_dir world)
+    ; 右に行けるか？
+    (if (is_empty_pos world (cons 1 0))
+      (cons state 1)
+      ; ダウン可能か？
+      (if (is_empty_pos world (cons 0 1))
+        (cons state 2)
+        ; 左に行けるか？
+        (if (is_empty_pos world (cons -1 0))
+          (cons state 3)
+          ; 上に行くしかない
+          (cons state 0)))))
+  )
+
 ; main
-(cons 0
-  (lambda (state world)
-    ; ダウン可能か？
-    (if (is_empty_pos world (cons 0 1))
-      (cons state 2)
-      ; アップ可能か？
-      (if (is_empty_pos world (cons 0 -1))
-        (cons state 0)
-        ; 右に行けるか？
-        (if (is_empty_pos world (cons 1 0))
-          (cons state 1)
-          ; 左に行くしかない
-          (cons state 3))))
-    )
-)
+(cons 0 step)
