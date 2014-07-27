@@ -123,6 +123,18 @@ end
 (turn_right 3)
 => 0
 --
+(turn_left 0)
+=> 3
+--
+(turn_left 1)
+=> 0
+--
+(turn_left 2)
+=> 1
+--
+(turn_left 3)
+=> 2
+--
 (is_pill_pos #{get_world(tuples)} (cons -1 0))
 => 1
 --
