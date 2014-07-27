@@ -195,3 +195,23 @@
 
 ; main
 (cons 0 step)
+
+; デバッグ用
+; 上の(cons 0 step)をコメントアウトし、こちらを有効化してlman.htmlに突っ込む
+; (let ((dummy_map (list (list 0 0 0)
+;                        (list 0 1 0)
+;                        (list 0 0 0)))
+;       (dummy_man (cons 0            ; vitality
+;                  (cons (cons 1 1)   ; pos
+;                  (cons 0            ; dir
+;                  (cons 3            ; lives
+;                        0)))))       ; score
+;       (dummy_ghosts (list (cons 0          ; mode
+;                           (cons (cons 1 1) ; pos
+;                                 0))))      ; dir
+;       (dummy_fruit 0))
+;   (let1 dummy_world (cons dummy_map
+;                     (cons dummy_man
+;                     (cons dummy_ghosts
+;                           dummy_fruit)))
+;     (step (break 0) dummy_world)))
