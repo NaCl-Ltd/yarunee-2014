@@ -1,5 +1,11 @@
 ; lambda-manに近づこうとするAI
 
+; レジスタのクリア
+mov c,0
+mov d,0
+mov e,0
+mov f,0
+
 int 3
 mov [0],a ; ghostのindex
 int 5
