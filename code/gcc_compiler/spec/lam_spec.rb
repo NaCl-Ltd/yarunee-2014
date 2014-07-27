@@ -117,6 +117,22 @@ TESTS = TESTS_.split(/^--.*$/).map{|x|
   [scm.strip, gcc.lstrip]
 }
 
+PARSER_TESTS = {
+  '(foo bar "baz" 1 -1)' => [[:foo, :bar, "baz", 1, -1]],
+  '"foo\nbar"' => ["foo\nbar"],
+  '(foo) (bar)' => [[:foo], [:bar]],
+  '(+ 1 2)' => [[:+, 1, 2]],
+  '(- 1 2)' => [[:-, 1, 2]],
+  '(* 1 2)' => [[:*, 1, 2]],
+  '(/ 1 2)' => [[:'/', 1, 2]],
+  '(= 1 2)' => [[:'=', 1, 2]],
+  '(> 1 2)' => [[:>, 1, 2]],
+  '(>= 1 2)' => [[:>=, 1, 2]],
+  '(int? 1)' => [[:int?, 1]],
+  '(lambda (x) (lambda (y) x))' => [[:lambda, [:x], [:lambda, [:y], :x]]],
+  '(let1 (x 1) bar)' => [[:let1, [:x, 1], :bar]],
+}
+
 module Lam
   describe 'Lam' do
     TESTS.each do |scm, gcc|
@@ -126,6 +142,14 @@ module Lam
           l.sub(/ ;.*/, "")
         }.join
         expect(result).to eq(gcc)
+      end
+    end
+
+    describe 'Parser' do
+      PARSER_TESTS.each do |input, output|
+        it "should parse #{input.inspect}" do
+          expect(Lam::Parser.run(input)).to eq(output)
+        end
       end
     end
   end
