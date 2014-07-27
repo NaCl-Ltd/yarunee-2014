@@ -4,3 +4,6 @@
 
 (define (not x)
   (if x false true))
+
+(define (null? x)
+  (and (int? x) (= x 0)))

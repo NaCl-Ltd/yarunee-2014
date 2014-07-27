@@ -16,4 +16,3 @@ rescue Lam::Error => ex
 rescue RParsec::ParserException => ex
   warn "パースエラー: #{ex.message}"
 end
-

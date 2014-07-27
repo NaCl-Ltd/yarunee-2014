@@ -240,13 +240,15 @@ module Lam
     def self.compile(exprs)
       *defs, main = exprs
 
+      macro_transformer = MacroTransformer.new
+
       # defineをパースする
       global_variables = defs.map{|d|
         match(d){
           with(_[:define, _[name, *params], body]){
-            [name, [:lambda, params, body]]
+            [name, [:lambda, params, macro_transformer.transform(body)]]
           }
-          with(_[:define, name, val]){
+          with(_[:define, name, macro_transformer.transform(val)]){
             [name, val]
           }
           with(_){
@@ -267,7 +269,7 @@ module Lam
       Lam.d(main.pretty_inspect)
       Lam.d("--")
 
-      ast = MacroTransformer.new.transform(main)
+      ast = macro_transformer.transform(main)
       Lam.d(ast.pretty_inspect)
       Lam.d("--")
 
@@ -445,6 +447,28 @@ module Lam
             }
           }
 
+          # (and x y)
+          # => (if x y 0)
+          with(_[:and, *args]){
+            changed = true
+            if args.length != 2
+              raise "AND must have two arguments"
+            end
+            x, y = args.map { |i| transform1.(i) }
+            [:if, x, y, 0]
+          }
+
+          # (or x y)
+          # => ((lambda (x) (if x x y)) x)
+          with(_[:or, *args]){
+            changed = true
+            if args.length != 2
+              raise "OR must have two arguments"
+            end
+            x, y = args.map { |i| transform1.(i) }
+            [[:lambda, [:x], [:if, :x, :x, y]], x]
+          }
+
           # 以下はマクロ適用ではないため、changed = trueは行わない
           with(_[head, *args]){
             [transform1.(head), *args.map{|x| transform1.(x)}]
@@ -456,6 +480,7 @@ module Lam
       }
 
       begin
+        changed = false
         program = transform1.(program)
       end while changed
       return program
