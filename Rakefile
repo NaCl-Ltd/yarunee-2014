@@ -48,7 +48,7 @@ task :check_all_committed do
 end
 
 task :tag do
-  sh "git tag #{VERSION}"
+  sh "git tag -u `git config --get user.email` -s -a -m 'yarunee!' #{VERSION}"
 end
 
 task :archive do
