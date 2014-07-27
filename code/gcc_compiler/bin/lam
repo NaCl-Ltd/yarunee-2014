@@ -17,8 +17,8 @@ begin
   end
   src = ARGF.read
   puts Lam.compile(prelude + src)
+rescue Lam::Parser::Error
+  warn "パースエラー"
 rescue Lam::Error => ex
   warn ex.message
-rescue RParsec::ParserException => ex
-  warn "パースエラー: #{ex.message}"
 end

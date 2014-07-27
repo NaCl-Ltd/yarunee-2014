@@ -19,10 +19,16 @@ module Lam
 
   # S-式の文字列をlam ASTに変換するクラス
   class Parser
+    class Error < ::Lam::Error; end
+
     def self.run(src)
       src = src.gsub(/;.*$/, "") # ;から後ろはコメントとして除去する。
       tree = SexpParser.new.parse(src)
-      return tree.to_a
+      ast = tree.to_a
+      if !ast || ast.empty?
+        raise Error
+      end
+      return ast
     end
 
     private
