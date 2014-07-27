@@ -99,6 +99,18 @@ end
 (map_pos (cons 2 3) #{tuples[0]})
 => 2
 --
+(direction 0)
+=> (0, -1)
+--
+(direction 1)
+=> (1, 0)
+--
+(direction 2)
+=> (0, 1)
+--
+(direction 3)
+=> (-1, 0)
+--
 (is_pill_pos #{get_world(tuples)} (cons -1 0))
 => 1
 --
