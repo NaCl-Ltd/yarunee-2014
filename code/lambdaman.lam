@@ -61,6 +61,9 @@
     )
   )
 )
+; フルーツが出ているか
+(define (fruits_appering? world)
+  (> (cdr (cdr (cdr world))) 0))
 
 ; 現在位置から指定した方向にpillが見えるか？
 (define (see_pill? world dir_cons)
@@ -71,7 +74,7 @@
     (cond ((= obj 0) false)
           ((= obj 2) true)
           ((= obj 3) true)
-          ((= obj 4) true)  ; フルーツが見えた時もとりあえずtrueにしている
+          ((= obj 4) (fruits_appering? world))  ; フルーツが見えた時もとりあえずtrueにしている
           (else (see_pill_from? (plus_cons pos dir_cons) world dir_cons)))))
 
 ; 右折方向
