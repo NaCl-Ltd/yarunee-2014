@@ -13,7 +13,7 @@ int 0
 hlt
 INPUT
 mov a,0 ; 0
-jeq 3,a,0 ; 1
+jeq 3,a,0 ; 1 (end)
 mov a,1 ; 2
 int 0 ; 3 end:
 hlt ; 4
@@ -31,7 +31,7 @@ mov a,1
     hlt
 INPUT
 mov a,0 ; 0
-jeq 3,a,0 ; 1
+jeq 3,a,0 ; 1 (end)
 mov a,1 ; 2
     int 0 ; 3 end:
     hlt ; 4

@@ -17,17 +17,28 @@ class Ghc
       end
       lines_without_label << l
     end
+    additional_comments = {} # {<address number> => [<comment1>, ...]}
     label_names_regexp = /\((#{labels.keys.join("|")})\)/
-    lines = lines_without_label.map do |l|
-      l.gsub(label_names_regexp) do
-        labels[Regexp.last_match[1]]
+    lines = lines_without_label.each_with_index.map do |l, n|
+      refs = []
+      l = l.gsub(label_names_regexp) do # ラベル参照の置換え
+        ref = Regexp.last_match[1]
+        refs << ref
+        labels[ref]
       end
+      if refs.length > 0 # ラベル参照コメント
+        additional_comments[n] = refs.sort.uniq.map {|x| "(#{x})"}
+      end
+      l
     end
-    inverted_labels = labels.invert
+    labels.each do |label, n| # ラベル定義コメント
+      additional_comments[n] ||= []
+      additional_comments[n].unshift("#{label}:")
+    end
     return lines.each_with_index.map do |l, n|
-      label = inverted_labels[n]
-      label_description = label ? " #{label}:" : ""
-      l + " ; #{n}#{label_description}\n"
+      comments = additional_comments[n]
+      comment = comments ? comments.map {|c| " " + c}.join : ""
+      l + " ; #{n}#{comment}\n"
     end.join
   end
 end
