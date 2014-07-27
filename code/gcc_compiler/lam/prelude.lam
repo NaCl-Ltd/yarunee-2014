@@ -26,13 +26,13 @@
 ; 左からの畳込み
 (define (fold kons knil clist)
   (if (null? clist)
-    kons
+    knil
     (fold kons (kons knil (car clist)) (cdr clist))))
 
 ; 右からの畳込み
 (define (fold-right kons knil clist)
   (if (null? clist)
-    kons
+    knil
     (kons (car clist) (fold-right kons knil (cdr clist)))))
 
 ; 写像
@@ -40,6 +40,18 @@
 ; => (1, 4, 9)
 (define (map proc clist)
   (fold-right (lambda (x l) (cons (proc x) l)) nil clist))
+
+; リスト内にpredが真になる要素があるとき真を返す
+(define (any? pred ls)
+  (fold (lambda (b item) (or b (pred item))) false ls))
+
+; リスト内の全ての要素に対してpredが真になるとき真を返す
+(define (all? pred ls)
+  (fold (lambda (b item) (and b (pred item))) true ls))
+
+; リスト内にpredが真になる要素がないとき真を返す
+(define (none? pred ls)
+  (fold (lambda (b item) (and b (not (pred item)))) true ls))
 
 ; n番目(0始まり)の要素
 ; (list-ref (list 5 6 7 8 9) 2) => 7
