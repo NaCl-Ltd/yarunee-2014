@@ -68,9 +68,26 @@ def get_world(tuples)
   return "(list #{tuples.join(" ")})"
 end
 
+def update_tuples(tuples, index, tuple)
+  tuples[index] = tuple
+  return get_world(tuples)
+end
+
 @spec = <<SPEC
 (current_pos #{get_world(tuples)})
 => (11, 16)
+--
+(current_dir #{get_world(tuples)})
+=> 0
+--
+(current_dir #{update_tuples(tuples, 1, "(list 4 (cons 11 16) 1 3 0)")})
+=> 1
+--
+(current_dir #{update_tuples(tuples, 1, "(list 4 (cons 11 16) 2 3 0)")})
+=> 2
+--
+(current_dir #{update_tuples(tuples, 1, "(list 4 (cons 11 16) 3 3 0)")})
+=> 3
 --
 (search 1 2 (list (list 1 2 3) (list 4 5 6)))
 => 6
