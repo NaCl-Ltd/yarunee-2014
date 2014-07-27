@@ -9,6 +9,11 @@ ai += File.read("./code/lambdaman.lam")
 game = {
   ghosts: []
 }
+
+4.times do |i|
+  game[:ghosts][i] = `bundle exec ./ghcc ./code/ghost#{i}.aghc`
+end
+
 opt = OptionParser.new
 opt.on("--g1 VALUE"){|v| game[:ghosts][0] = File.read(v)}
 opt.on("--g2 VALUE"){|v| game[:ghosts][1] = File.read(v)}
