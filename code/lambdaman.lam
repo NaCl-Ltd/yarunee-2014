@@ -39,16 +39,16 @@
 ; 右から時計回りの探索
 (define (search_round func world state default)
   ; 右に行けるか？
-  (if (func world (cons 1 0))
+  (if (func world (direction 1))
     (cons state 1)
     ; ダウン可能か？
-    (if (func world (cons 0 1))
+    (if (func world (direction 2))
       (cons state 2)
       ; 左に行けるか？
-      (if (func world (cons -1 0))
+      (if (func world (direction 3))
         (cons state 3)
         ; 上に行くしかない
-        (if (func world (cons 0 -1))
+        (if (func world (direction 0))
           (cons state 0)
           default))))
 )
