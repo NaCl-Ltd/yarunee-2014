@@ -1,0 +1,151 @@
+;pillgardian.aghc
+;基本気まぐれでピルを見つけたら守る
+
+;レジスタ初期化
+mov c,0
+
+checkinit:
+int 3
+int 5
+mov c,a
+mov d,b
+int 3
+int 4
+jeq (init),a,c
+jeq (init),d,b
+jmp (checkinitend)
+init:
+mov [201],0
+mov c,0
+mov d,0
+mov e,0
+checkinitend:
+
+jeq (pillguard),[201],1
+mov [254],20
+fickle:
+mov a,255      ; A is the min value.
+mov b,0        ; B is the corresponding direction.
+mov c,255      ; C is the candidate direction for the new min.
+fickleloop:
+inc c          ; Pick new direction.
+jgt (fickleloopend),[c],a    ; Jump if count of direction C is above best so far.
+; We have a new min.
+mov a,[c]      ; Save new min.
+mov b,c        ; Save direction.
+jlt (fickleloop),c,3      ; Jump target. Loop back if we have not tried all 4 directions.
+fickleloopend:
+mov a,b        ; Actually set desired direction.
+int 0
+int 3          ; Get our ghost index in A.
+int 6          ; Get out current direction in B.
+inc [b]        ; Increment corresponding count.
+dec [254]
+mov a,0
+mov b,0
+fickleend:
+
+checkpill:
+int 3
+int 5
+int 7
+jeq (detectpill),a,3 ; 3 = power pill
+hlt
+
+existpill:
+mov a,[4]
+mov b,[5]
+int 7
+jeq (pillguard),a,3 ; 3 = power pill
+mov [4],0
+mov [5],0
+mov [201],0 ; pilguard disable
+jmp (end)
+
+; pilに近づこうとするAI
+detectpill:
+int 3
+int 5
+mov [4],a
+mov [5],b
+mov [201],1
+jmp (pillguard)
+
+; pill周りを周回
+pillguard:
+; レジスタのクリア
+mov a,0
+mov b,0
+mov c,0
+mov d,0
+mov e,0
+mov f,0
+
+int 3
+mov [0],a ; ghostのindex
+int 5
+mov [1],a ; ghostのX座標
+mov [2],b ; ghostのY座標
+mov a,[0]
+int 6
+mov [3],b ; ghostの向き
+
+horizontalcheck:
+mov a,[1] ; ghost x
+mov b,[4] ; pill x
+jgt (leftcheck),a,b 
+jlt (rightcheck),a,b
+jeq (verticalcheck),0,0
+
+leftcheck:
+mov c,1   ; leftcheck done
+dec a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,3   ; 3 = left
+jeq (end),0,0
+
+rightcheck:
+mov d,1   ; rightcheck done
+inc a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,1   ; 1 = right
+jeq (end),0,0
+
+verticalcheck:
+mov a,[2] ; ghost y
+mov b,[5] ; pill y
+jgt (upcheck),a,b
+jlt (downcheck),a,b
+jeq (end),0,0
+
+upcheck:
+mov e,1   ; upcheck done
+dec a
+int 7     ; map state
+jeq (upfallback),a,0  ; 0 = wall
+mov a,0   ; 0 = up
+jeq (end),0,0
+
+upfallback:
+jeq (leftcheck),c,0
+jeq (rightcheck),d,0
+jeq (downcheck),f,0
+
+downcheck:
+mov f,1   ; downcheck done
+inc a
+int 7     ; map state
+jeq (downfallback),a,0  ; 0 = wall
+mov a,2   ; 2 = down
+jeq (end),0,0
+
+downfallback:
+jeq (rightcheck),d,0
+jeq (leftcheck),c,0
+jeq (upcheck),e,0
+
+end:
+int 0
+hlt
