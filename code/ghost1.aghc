@@ -1,7 +1,24 @@
+checkinit:
+int 3
+int 5
+mov c,a
+mov d,b
+int 3
+int 4
+jeq (init),a,c
+jeq (init),d,b
+jmp (checkinitend)
+init:
+int 8
+mov [254],4
+mov c,0
+mov d,0
+mov e,0
+checkinitend:
+
 ; 最初の数ターンは気まぐれAI
-jeq (fickleend),[254],1
-jgt (fickle),[254],0
-mov [254],20
+jeq (fickleend),[254],0
+mov a,[254]
 fickle:
 mov a,255      ; A is the min value.
 mov b,0        ; B is the corresponding direction.
@@ -27,15 +44,13 @@ fickleend:
 
 
 ; レジスタのクリア
+int 8
 mov a,0
 mov b,0
 mov c,0
 mov d,0
 mov e,0
 mov f,0
-
-; 目的地についていたら時間を潰す
-jgt (nop),[10],0
 
 int 3
 mov [0],a ; ghostのindex
@@ -98,7 +113,7 @@ mov a,[2] ; ghost y
 mov b,[9] ; lambda look y
 jgt (upcheck),a,b
 jlt (downcheck),a,b
-jeq (hold),0,0
+jeq (emit),0,0
 
 upcheck:
 mov e,1   ; upcheck done
@@ -125,22 +140,6 @@ downfallback:
 jeq (rightcheck),d,0
 jeq (leftcheck),c,0
 jeq (upcheck),e,0
-
-hold:
-mov [10], 10 ; 消費するtick数を設定
-jmp (nop)
-
-; その場でウロウロ
-nop:
-int 3
-int 5
-and a,1
-mov b,a
-mov a,2
-jeq 7,b,1
-mov a,0
-dec [10]  ; 消費するtick数
-jmp (emit)
 
 emit:
 int 0
