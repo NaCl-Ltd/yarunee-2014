@@ -16,6 +16,8 @@
 (define (cons x y) (cons x y))
 (define (car x) (car x))
 (define (cdr x) (cdr x))
+(define (or x y) (or x y))
+(define (and x y) (and x y))
 
 (define (not x)
   (if x false true))

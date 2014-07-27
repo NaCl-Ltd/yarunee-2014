@@ -8,6 +8,11 @@
 ; 現在方向を取得
 (define (current_dir world) (car (cdr (cdr (car (cdr world))))))
 
+; ゴーストの現在地((x,y)のペア)のリストを返す
+(define (ghost_locations world)
+  (map (lambda (x) (list-ref x 1)) (list-ref world 2))
+)
+
 ; cons+cons=cons
 (define (plus_cons c1 c2)
   (cons (+ (car c1) (car c2)) (+ (cdr c1) (cdr c2))))
@@ -39,6 +44,23 @@
   (if (= (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 2)
     1 0))
 
+; 2つの座標が同じかどうか
+(define (is_equal_pos pos1 pos2)
+  (if (= (car pos1) (car pos2))
+    (if (= (cdr pos1) (cdr pos2))
+      1 0)
+  0)
+)
+
+; 指定した方向が安全か(ゴーストがいないか)
+(define (is_safe_pos world dir_cons ghosts)
+  (not
+    (fold or false
+      (map (lambda (x) (is_equal_pos x (plus_cons (current_pos world) dir_cons))) ghosts)
+    )
+  )
+)
+
 ; 右折方向
 (define (turn_right dir)
   (if (> (+ dir 1) 3) 0 (+ dir 1)))
@@ -57,7 +79,10 @@
 (define (search_round func world state dir default)
   (cond
     ( ; 同じ方向に行けるか
-      (func world (direction dir))
+      (and
+        (is_safe_pos world (direction dir) (ghost_locations world))
+        (func world (direction dir))
+      )
       (cons state dir)
     )
     ( ; 右折可能か？
@@ -75,6 +100,7 @@
     (else default)
   )
 )
+
 
 ; step関数
 (define (step state world)
