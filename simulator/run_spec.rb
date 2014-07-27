@@ -2,6 +2,9 @@ require 'tempfile'
 require 'json'
 
 @spec = <<SPEC
+(current_pos (list (list 1 2 3) (list 4 (cons 11 16) 6) (list 7 8 9)))
+=> (11, 16)
+--
 (search 1 2 (list (list 1 2 3) (list 4 5 6)))
 => 6
 --
