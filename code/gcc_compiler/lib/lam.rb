@@ -57,18 +57,10 @@ module Lam
       @op, @args = op, args
       @lineno = nil
       @comment = nil
-      @tailcall_optimizable = false
-      @sel = sel
     end
     attr_accessor :op
     attr_accessor :lineno
     attr_accessor :comment
-    attr_writer :tailcall_optimizable
-    attr_accessor :sel # JOINに対応するSEL
-    
-    def tailcall_optimizable?
-      return @tailcall_optimizable
-    end
 
     # このOpがもつblockの一覧を返す
     def blocks
@@ -164,41 +156,10 @@ module Lam
         op
       }
 
-      # 末尾呼び出しの最適化
-      optimize_tailcall(ops)
-
       # 上から順に出力する
       return ops.map{|op|
         op.to_gcc + "\n"
       }.join
-    end
-
-    private
-   
-    # 末尾呼び出しの最適化
-    def optimize_tailcall(ops)
-      ops.each{|op|
-        if op.op == :AP && op.tailcall_optimizable?
-          op2 = get_next_op(ops, op)
-          if op2.op == :RTN
-            op.op = :TAP
-          end
-        end
-      }
-    end
-
-    # 次の命令を返す。
-    # 次の命令がJOINの場合は対応するSELの次の命令を返す。
-    def get_next_op(ops, op)
-      op2 = ops[op.lineno + 1]
-      # GCCが制御スタックにJOINのタグを積む仕様のため、JOINがある場合は
-      # 末尾呼び出しの最適化をすると制御スタックにタグが残る。
-      # if op2.op == :JOIN
-      #   return get_next_op(ops, op2.sel)
-      # else
-      #   return op2
-      # end
-      return op2
     end
   end
 
@@ -291,7 +252,7 @@ module Lam
         main
     end
 
-    def compile(e, env)
+    def compile(e, env, is_tail = false)
       match(e){
         # 整数
         with(Integer){
@@ -367,23 +328,26 @@ module Lam
         with(_[:lambda, params, body]){
           env.captured = true
 
-          cbody = compile(body, Env.new(params, env)) +
+          # bodyは単一の式なのでcompileの第3引数is_tailはtrueにする。
+          cbody = compile(body, Env.new(params, env), true) +
                   [Op[:RTN]]
 
           Gcc.new([Op[:LDF, cbody]])
         }
 
         with(_[:if, cond, expr1, expr2]){
-          join1 = Op[:JOIN]
-          join2 = Op[:JOIN]
-          cexpr1 = compile(expr1, env) + [join1]
-          cexpr2 = compile(expr2, env) + [join2]
+          if is_tail
+            # 末尾分岐の最適化
+            sel_op = :TSEL
+            end_op = :RTN
+          else
+            sel_op = :SEL
+            end_op = :JOIN
+          end
+          cexpr1 = compile(expr1, env, is_tail) + [Op[end_op]]
+          cexpr2 = compile(expr2, env, is_tail) + [Op[end_op]]
 
-          sel = Op[:SEL, cexpr1, cexpr2]
-          join1.sel = sel
-          join2.sel = sel
-
-          compile(cond, env) + Gcc.new([sel])
+          compile(cond, env) + Gcc.new([Op[sel_op, cexpr1, cexpr2]])
         }
 
         with(_[:inline, str]){
@@ -396,16 +360,18 @@ module Lam
             compile(arg, env)
           }.inject(Gcc.new([]), :+)
 
-          ap = Op[:AP, args.length]
-          # envがlambdaでcaptureされている場合や、引数の数が現在の関数の引数
-          # の数より大きい場合は、末尾呼び出しの最適化を行ってはいけない。
-          if !env.captured? && args.length <= env.length
-            ap.tailcall_optimizable = true
+          # 末尾の呼び出しで、現在の環境がlambdaにキャプチャされておらず、
+          # 引数の数が現在の関数の引数の数以下の場合、末尾呼出の最適化を
+          # 行う。
+          if is_tail && !env.captured? && args.length <= env.length
+            op = :TAP
+          else
+            op = :AP
           end
 
           cargs +
           compile(func, env) +
-          Gcc.new([ap])
+          Gcc.new([Op[op, args.length]])
         }
 
         with(_){

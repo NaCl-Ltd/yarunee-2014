@@ -38,7 +38,7 @@ JOIN
 ((lambda () 1))
 :
 LDF 3
-TAP 0
+AP 0
 RTN
 LDC 1
 RTN
@@ -125,6 +125,65 @@ LDC 4
 JOIN
 LDC 5
 JOIN
+--
+(define (foo) (foo))
+(foo)
+:
+DUM 1
+LDF 8
+LDF 5
+RAP 1
+RTN
+LD 0 0
+AP 0
+RTN
+LD 1 0
+TAP 0
+RTN
+LD 0 0
+AP 0
+RTN
+--
+(define (fact-i n x)
+  (if (< n 2) x (fact-i (- n 1) (* x n))))
+(define (fact n) (fact-i n 1))
+(fact 10)
+:
+DUM 2
+LDF 10
+LDF 26
+LDF 6
+RAP 2
+RTN
+LDC 10
+LD 0 1
+AP 1
+RTN
+LDC 2
+LD 0 0
+CGT
+TSEL 15 17
+RTN
+LD 0 1
+RTN
+LD 0 0
+LDC 1
+SUB
+LD 0 1
+LD 0 0
+MUL
+LD 1 0
+TAP 2
+RTN
+LD 0 0
+LDC 1
+LD 1 0
+AP 2
+RTN
+LDC 10
+LD 0 1
+AP 1
+RTN
 EOD
 
 TESTS = TESTS_.split(/^--.*$/).map{|x|
