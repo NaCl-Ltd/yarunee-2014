@@ -36,20 +36,34 @@
   (if (= (map_pos (plus_cons (current_pos world) dir_cons) (car world)) 2)
     1 0))
 
-; 右から時計回りの探索
-(define (search_round func world state default)
-  ; 右に行けるか？
-  (if (func world (direction 1))
-    (cons state 1)
-    ; ダウン可能か？
-    (if (func world (direction 2))
-      (cons state 2)
-      ; 左に行けるか？
-      (if (func world (direction 3))
-        (cons state 3)
+; 右折方向
+(define (turn_right dir)
+  (if (> (+ dir 1) 3) 0 (+ dir 1)))
+
+; 左折方向
+(define (turn_left dir)
+  (if (< (- dir 1) 0) 3 (- dir 1)))
+
+; 反対方向
+(define (turn_opposite dir)
+  (if (> (+ dir 2) 3) (- dir 2) (+ dir 2)))
+
+; 進む方向の探索関数
+; 進んでよいか判定する関数と現在方向を受け取る
+; 探索優先順位は、1.進む方向 2.90度曲がる方向 3.引き返す方向
+(define (search_round func world state dir default)
+  ; 同じ方向に行けるか？
+  (if (func world (direction dir))
+    (cons state dir)
+    ; 右折可能か？
+    (if (func world (direction (turn_right dir)))
+      (cons state (turn_right dir))
+      ; 左折可能か？
+      (if (func world (direction (turn_left dir)))
+        (cons state (turn_left dir))
         ; 上に行くしかない
-        (if (func world (direction 0))
-          (cons state 0)
+        (if (func world (direction (turn_opposite dir)))
+          (cons state (turn_opposite dir))
           default))))
 )
 
@@ -59,11 +73,11 @@
   (if (is_pill_pos world (direction (current_dir world)))
     (cons state (current_dir world))
     ; pillのない方向に進もうとしている場合、周囲を確認
-    (search_round is_pill_pos world state
+    (search_round is_pill_pos world state (current_dir world)
       ; 周囲にpillがない場合は同じ方向を優先として壁以外に進む
       (if (is_empty_pos world (direction (current_dir world)))
         (cons state (current_dir world))
-        (search_round is_empty_pos world state 0))))
+        (search_round is_empty_pos world state (current_dir world) 0))))
 )
 
 ; main
