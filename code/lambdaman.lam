@@ -57,12 +57,12 @@
 (define (step state world)
   ; 同じ方向にpillがあればそのまま
   (if (is_pill_pos world (direction (current_dir world)))
-    (current_dir world)
+    (cons state (current_dir world))
     ; pillのない方向に進もうとしている場合、周囲を確認
     (search_round is_pill_pos world state
       ; 周囲にpillがない場合は同じ方向を優先として壁以外に進む
       (if (is_empty_pos world (direction (current_dir world)))
-        (current_dir world)
+        (cons state (current_dir world))
         (search_round is_empty_pos world state 0))))
 )
 
