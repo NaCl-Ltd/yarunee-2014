@@ -23,17 +23,31 @@
 (define (null? x)
   (and (int? x) (= x 0)))
 
+; 左からの畳込み
 (define (fold kons knil clist)
   (if (null? clist)
     kons
     (fold kons (kons knil (car clist)) (cdr clist))))
 
+; 右からの畳込み
 (define (fold-right kons knil clist)
   (if (null? clist)
     kons
     (kons (car clist) (fold-right kons knil (cdr clist)))))
 
+; 写像
+; (map (lambda (x) (* x x)) (list 1 2 3))
+; => (1, 4, 9)
 (define (map proc clist)
   (fold-right (lambda (x l) (cons (proc x) l)) nil clist))
+
+; n番目(0始まり)の要素
+; (list-ref (list 5 6 7 8 9) 2) => 7
+(define (list-ref clist n)
+  (if (or (null? clist) (< n 0))
+    nil
+    (if (= n 0)
+      (car clist)
+      (list-ref (cdr clist) (- n 1)))))
 
 ; vim: set filetype=lisp :
