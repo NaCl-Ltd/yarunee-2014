@@ -1,0 +1,79 @@
+; lambda-manに近づこうとするAI
+
+; レジスタのクリア
+mov c,0
+mov d,0
+mov e,0
+mov f,0
+
+int 3
+mov [0],a ; ghostのindex
+int 5
+mov [1],a ; ghostのX座標
+mov [2],b ; ghostのY座標
+mov a,[0]
+int 6
+mov [3],b ; ghostの向き
+int 1
+mov [4],a ; lambda-manのX座標
+mov [5],b ; lambda-manのY座標
+
+horizontalcheck:
+mov a,[1] ; ghost x
+mov b,[4] ; lambda x
+jgt (leftcheck),a,b 
+jlt (rightcheck),a,b
+jeq (verticalcheck),0,0
+
+leftcheck:
+mov c,1   ; leftcheck done
+dec a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,3   ; 3 = left
+jeq (end),0,0
+
+rightcheck:
+mov d,1   ; rightcheck done
+inc a
+int 7     ; map state
+jeq (verticalcheck),a,0  ; 0 = wall
+mov a,1   ; 1 = right
+jeq (end),0,0
+
+verticalcheck:
+mov a,[2] ; ghost y
+mov b,[5] ; lambda y
+jgt (upcheck),a,b 
+jlt (downcheck),a,b
+jeq (end),0,0
+
+upcheck:
+mov e,1   ; upcheck done
+dec a
+int 7     ; map state
+jeq (upfallback),a,0  ; 0 = wall
+mov a,0   ; 0 = up
+jeq (end),0,0
+
+upfallback:
+jeq (leftcheck),c,0
+jeq (rightcheck),d,0
+jeq (downcheck),f,0
+
+downcheck:
+mov f,1   ; downcheck done
+inc a
+int 7     ; map state
+jeq (downfallback),a,0  ; 0 = wall
+mov a,2   ; 2 = down
+jeq (end),0,0
+
+downfallback:
+jeq (rightcheck),d,0
+jeq (leftcheck),c,0
+jeq (upcheck),e,0
+
+end:
+int 0
+hlt
