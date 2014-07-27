@@ -27,9 +27,13 @@
 
 ; 方向を表す単位ベクトル
 (define (direction dir)
-  (if (= dir 0) (cons 0 -1)
-    (if (= dir 1) (cons 1 0)
-      (if (= dir 2) (cons 0 1) (cons -1 0)))))
+  (cond
+    ((= dir 0) (cons 0 -1))
+    ((= dir 1) (cons 1 0))
+    ((= dir 2) (cons 0 1))
+    (else (cons -1 0))
+  )
+)
 
 ; 指定した方向がpillか？
 (define (is_pill_pos world dir_cons)
@@ -52,19 +56,25 @@
 ; 進んでよいか判定する関数と現在方向を受け取る
 ; 探索優先順位は、1.進む方向 2.90度曲がる方向 3.引き返す方向
 (define (search_round func world state dir default)
-  ; 同じ方向に行けるか？
-  (if (func world (direction dir))
-    (cons state dir)
-    ; 右折可能か？
-    (if (func world (direction (turn_right dir)))
+  (cond
+    ( ; 同じ方向に行けるか
+      (func world (direction dir))
+      (cons state dir)
+    )
+    ( ; 右折可能か？
+      (func world (direction (turn_right dir)))
       (cons state (turn_right dir))
-      ; 左折可能か？
-      (if (func world (direction (turn_left dir)))
-        (cons state (turn_left dir))
-        ; 上に行くしかない
-        (if (func world (direction (turn_opposite dir)))
-          (cons state (turn_opposite dir))
-          default))))
+    )
+    ( ; 左折可能か？
+      (func world (direction (turn_left dir)))
+      (cons state (turn_left dir))
+    )
+    ( ; 上に行くしかない
+      (func world (direction (turn_opposite dir)))
+      (cons state (turn_opposite dir))
+    )
+    (else default)
+  )
 )
 
 ; step関数
