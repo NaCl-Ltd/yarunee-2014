@@ -5,6 +5,8 @@ class Ghc
     labels = {}
     lines_without_label = []
     raw_lines.each do |l|
+      l = l.sub(/\s*;.*/, "")
+      next if "" == l
       if (md = /\A\s*([a-zA-Z0-9]+):/.match(l)) # ラベル行
         name = md[1]
         labels[name] = lines_without_label.length

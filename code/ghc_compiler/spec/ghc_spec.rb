@@ -13,9 +13,8 @@ int 0
 hlt
 INPUT
 mov a,0
-jeq 4,a,0
+jeq 3,a,0
 mov a,1
-
 int 0
 hlt
 OUTPUT
@@ -32,9 +31,8 @@ mov a,1
     hlt
 INPUT
 mov a,0
-jeq 4,a,0
+jeq 3,a,0
 mov a,1
-
     int 0
     hlt
 OUTPUT
