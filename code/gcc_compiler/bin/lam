@@ -2,13 +2,19 @@
 $LOAD_PATH.unshift "#{__dir__}/../lib"
 require 'lam'
 
+no_prelude = ARGV.delete("--no-prelude")
+
 if ARGV.size == 0
-  puts "usage: lam foo.lam"
+  puts "usage: lam [--no-prelude] foo.lam"
   exit
 end
 
 begin
-  prelude = File.read("#{__dir__}/../lam/prelude.lam")
+  if no_prelude
+    prelude = ""
+  else
+    prelude = File.read("#{__dir__}/../lam/prelude.lam")
+  end
   src = ARGF.read
   puts Lam.compile(prelude + src)
 rescue Lam::Error => ex
