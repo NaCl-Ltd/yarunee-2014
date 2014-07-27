@@ -219,6 +219,24 @@ lightning roundではあなたのLambda-Manと審判から提供されたゴー�
 難しいマップは大きく、たくさんゴーストがいてpower pillもなかなか現れません。
 マップの最大サイズは256*256です。
 
+= GHost CPU (GHC)
+
+The GHost CPU (GHC)は伝統的な8ビットマイクロコントローラです。
+各ゴーストは別々なGHCで動作します。
+我々がCPUマニュアルの完全なコピーを見つけたとはいえ、
+it is quite terse in parts, as it assumes the conventions of the
+day.
+For those of you who (because of age or youth) do not remember the
+1980s, we have tried to explain some of these conventions.
+
+== GHC State
+
+各レジスタは8-bit unsigned intを持っています。
+2つの分割したメモリがあります。
+データメモリとコードメモリでそれぞれ256ヶ所（0から255の番号がついた）あります。
+故に、レジスタの中身はデータメモリアドレスやデータメモリロケーションの中身やコードメモリアドレスのように直接解釈可能です。
+GHCは全て256の剰余を行います。つまり、255 + 1 = 0
+
 = Lambda-Man CPU
 
 我々はプロセッサのISA（バスアーキテクチャ）とアセンブリコードのいくつかのビットを含むLambda-Man AIチームによるプログラミング環境に関するいくつかのドキュメントを修復することができました。
