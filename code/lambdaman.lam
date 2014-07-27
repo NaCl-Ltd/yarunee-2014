@@ -68,14 +68,12 @@
 ; NOTE: 手抜きなので位置の二次元リストを返しています
 (define (danger_zone world)
   (let1 ghosts (car (cdr (cdr world)))
-    (map (lambda (i) 
-           (let1 ghost (list-ref ghosts i)
-             (let ((pos (cdr car ghost))
-                   (dir (cdr cdr ghost)))
-               (list pos
-                     (plus_cons pos (direction dir))
-                     (plus_cons (plus_cons pos (direction dir)) (direction dir))))))
-      (list 0 1 2 3))))
+    (map (lambda (ghost)
+           (let ((pos (car (cdr ghost)))
+                 (dir (cdr (cdr ghost))))
+             (list pos                                 ; ゴーストがいるマス
+                   (plus_cons pos (direction dir)))))  ; ゴーストが次に移動するマス
+      ghosts)))
 ; 指定位置にゴーストが来ようとしているか
 (define (ghost_coming? danger_poss pos)
   (any? (lambda (row)
