@@ -69,7 +69,7 @@
       (func world (direction (turn_left dir)))
       (cons state (turn_left dir))
     )
-    ( ; 上に行くしかない
+    ( ; 引き返せるか？
       (func world (direction (turn_opposite dir)))
       (cons state (turn_opposite dir))
     )
