@@ -23,6 +23,6 @@ class Ghc
         labels[Regexp.last_match[1]]
       end
     end
-    return lines.map {|l| l + "\n"}.join
+    return lines.each_with_index.map {|l, n| l + " ; #{n}\n"}.join
   end
 end
