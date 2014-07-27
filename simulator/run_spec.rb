@@ -99,6 +99,12 @@ end
 (map_pos (cons 2 3) #{tuples[0]})
 => 2
 --
+(is_pill_pos #{get_world(tuples)} (cons -1 0))
+=> 1
+--
+(is_pill_pos #{get_world(tuples)} (cons 1 0))
+=> 0
+--
 (plus_cons (cons 1 2) (cons 1 2))
 => (2, 4)
 SPEC
