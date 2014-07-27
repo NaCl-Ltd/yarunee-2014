@@ -67,7 +67,8 @@ class Sim
             @c = @c+1
           }
 
-          with(_["LD", n, i]){
+          with(_["LD", n_, i]){
+            n = n_
             fp = @e
             while n > 0 do            # follow chain of frames to get n'th frame
               fp = FRAME_PARENT(fp)
@@ -247,7 +248,7 @@ class Sim
             @c = x.addr                    # jump to return address
           }
 
-          with(_["DUM"]){
+          with(_["DUM", n]){
             fp = ALLOC_FRAME(n)       # create a new empty frame of size n
             set_FRAME_PARENT(fp, @e)      # set its parent frame
             set_FRAME_TAG(fp, TAG_DUM)    # mark the frame as dummy
@@ -255,7 +256,7 @@ class Sim
             @c = @c+1
           }
 
-          with(_["RAP"]){
+          with(_["RAP", n]){
             x,@s = POP(@s)            # get and examine function closure
             if TAG(x) != TAG_CLOSURE then FAULT(TAG_MISMATCH) end
             f = CAR_CLOSURE(x)
@@ -407,24 +408,55 @@ class Sim
       x.e
     end
 
-    Frame = Struct.new(:values, :parent)
+    Frame = Struct.new(:values, :parent, :tag)
     def ALLOC_FRAME(n)
-      Frame.new(Array.new(n, nil), nil)
+      Frame.new(Array.new(n, nil), nil, nil)
     end
     def set_FRAME_PARENT(frame, e)
       raise TypeError unless frame.is_a?(Frame)
       frame.parent = e
     end
-    def set_FRAME_VALUE(frame, i, x)
+    def set_FRAME_VALUE(frame, i, v)
       raise TypeError unless frame.is_a?(Frame)
       raise IndexError unless (0...frame.values.length).cover?(i)
-      frame.values[i] = e
+      frame.values[i] = v
+    end
+    def set_FRAME_TAG(frame, tag)
+      raise TypeError unless frame.is_a?(Frame)
+      frame.tag = tag
+    end
+    def unset_FRAME_TAG(frame, tag)
+      raise TypeError unless frame.is_a?(Frame)
+      raise RuntimeError unless frame.tag == tag
+      frame.tag = nil
+    end
+    def FRAME_PARENT(frame)
+      raise TypeError unless frame.is_a?(Frame)
+      frame.parent
+    end
+    def FRAME_TAG(frame)
+      raise TypeError unless frame.is_a?(Frame)
+      frame.tag
+    end
+    def FRAME_VALUE(frame, i)
+      raise TypeError unless frame.is_a?(Frame)
+      raise IndexError unless (0...frame.values.length).cover?(i)
+      frame.values[i]
+    end
+    def FRAME_SIZE(frame)
+      raise TypeError unless frame.is_a?(Frame)
+      frame.values.length
     end
 
     TaggedInt = Struct.new(:i) {
       include Comparable
-      def <=>(other)
-        i <=> other
+      def <=>(other); i <=> other.to_i; end
+      def +(other); i + other.to_i; end
+      def -(other); i - other.to_i; end
+      def *(other); i * other.to_i; end
+      def /(other); (i / other.to_i).floor; end
+      def to_i
+        i
       end
     }
     Join = Struct.new(:addr)
@@ -469,13 +501,6 @@ class Sim
       else
         raise "unknown tag: #{tag.inspect}"
       end
-    end
-
-    def FRAME_PARENT(a)
-    end
-    def FRAME_TAG(a)
-    end
-    def FRAME_VALUE(a, b)
     end
 
     FRAME_MISMATCH = "frame mismatch"
