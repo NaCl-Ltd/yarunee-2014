@@ -414,39 +414,51 @@ module Lam
   end
 
   # マクロを展開する
-  #
-  # NOTE: 現在はマクロ展開結果にはマクロが使えません
-  # (使いたい場合は、変化がなくなるまで繰り返しtransformを適用するようにする。)
   class MacroTransformer
     def transform(program)
-      match(program){
-        with(_[:let1, varname, expr, body]){
-          [[:lambda, [varname], transform(body)],
-           transform(expr)]
-        }
+      # Note: マクロ展開結果の中で別のマクロを使いたいことがあるので、
+      # 変化がなくなるまで繰り返しtransform1を適用している
+      changed = nil
+      transform1 = ->(program){
+        match(program){
+          with(_[:let1, varname, expr, body]){
+            changed = true
+            [[:lambda, [varname], transform1.(body)],
+                 transform1.(expr)]
+          }
 
-        with(_[:let, defs, body]){
-          raise "malformed let: #{program.inspect}" if !defs.is_a?(Array) || defs.any?{|x| !x.is_a?(Array) || x.length != 2}
-          varnames = defs.map(&:first)
-          values = defs.map(&:last)
-          [[:lambda, varnames, transform(body)],
-           *values.map{|x| transform(x)}]
-        }
+          with(_[:let, defs, body]){
+            changed = true
+            raise "malformed let: #{program.inspect}" if !defs.is_a?(Array) || defs.any?{|x| !x.is_a?(Array) || x.length != 2}
+            varnames = defs.map(&:first)
+            values = defs.map(&:last)
+            [[:lambda, varnames, transform1.(body)],
+             *values.map{|x| transform1.(x)}]
+          }
 
-        # (list 1 2 3)
-        # => (cons 1 (cons 2 (cons 3 0)))
-        with(_[:list, *values]){
-          values.reverse.inject(0){|b, a|
-            [:cons, transform(a), b]
+          # (list 1 2 3)
+          # => (cons 1 (cons 2 (cons 3 0)))
+          with(_[:list, *values]){
+            changed = true
+            values.reverse.inject(0){|b, a|
+              [:cons, transform1.(a), b]
+            }
+          }
+
+          # 以下はマクロ適用ではないため、changed = trueは行わない
+          with(_[head, *args]){
+            [transform1.(head), *args.map{|x| transform1.(x)}]
+          }
+          with(_){ 
+            program
           }
         }
-
-        with(_[head, *args]){
-          [transform(head), *args.map{|x| transform(x)}]
-        }
-
-        with(_){ program }
       }
+
+      begin
+        program = transform1.(program)
+      end while changed
+      return program
     end
   end
 end
