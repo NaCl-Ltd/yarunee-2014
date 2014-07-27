@@ -212,7 +212,7 @@
     ; pillが周囲になければ壁のない方向へ
     (search_round is_empty_pos world state (current_dir world)
       ; デフォルトは前進
-      (current_dir world))))
+      (cons 0 (current_dir world)))))
 
 ; main
 (cons 0 step)
