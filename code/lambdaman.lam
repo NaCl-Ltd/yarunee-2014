@@ -84,12 +84,13 @@
 
 ; 現在位置から指定した方向にghostが見えるか？
 (define (see_ghost? world dir_cons danger_poss)
-  (see_ghost_from? (plus_cons (current_pos world) dir_cons) world dir_cons danger_poss))
+  (see_ghost_from? (plus_cons (current_pos world) dir_cons) world dir_cons danger_poss 5))
 ; ある位置から指定した方向にghostが見えるか？
-(define (see_ghost_from? pos world dir_cons danger_poss)
-  (cond ((= (map_pos pos (car world)) 0) false) ; 壁まで見た
+(define (see_ghost_from? pos world dir_cons danger_poss dist)
+  (cond ((= dist 0) false) ; 一定距離内に見えなかった
+        ((= (map_pos pos (car world)) 0) false) ; 壁まで見た
         ((ghost_coming? danger_poss pos) true)
-        (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons danger_poss))))
+        (else (see_ghost_from? (plus_cons pos dir_cons) world dir_cons danger_poss (- dist 1)))))
 
 ; 現在位置から指定した方向にpillが見えるか？
 (define (see_pill? world dir_cons)
