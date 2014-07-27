@@ -111,6 +111,18 @@ end
 (direction 3)
 => (-1, 0)
 --
+(turn_right 0)
+=> 1
+--
+(turn_right 1)
+=> 2
+--
+(turn_right 2)
+=> 3
+--
+(turn_right 3)
+=> 0
+--
 (is_pill_pos #{get_world(tuples)} (cons -1 0))
 => 1
 --
