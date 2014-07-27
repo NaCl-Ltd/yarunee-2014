@@ -1,0 +1,21 @@
+; ランダム値が入っていたらjump
+mov a,d
+jgt (seedrandom),a,0
+
+; ghostの位置をシードにする
+int 4
+int 5
+add a,b
+
+; IN <- reg A seed
+; OUT -> reg A ランダムな数値
+seedrandom:
+mul a,61
+add a,5   ; (seed*61)+5
+and a,255 ; mod 256
+
+; d にシード値を格納
+mov d,a
+and a,3 ; 0b11でマスク
+int 0
+hlt
