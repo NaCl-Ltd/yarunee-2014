@@ -1,8 +1,75 @@
 require 'tempfile'
 require 'json'
 
+tuples = [
+  # The state of the world is encoded as follows:
+  #
+  # A 4-tuple consisting of
+  #
+  # 1. The map;
+  # 2. the status of Lambda-Man;
+  # 3. the status of all the ghosts;
+  # 4. the status of fruit at the fruit location.
+  #
+  # The map is encoded as a list of lists (row-major) representing the 2-d
+  # grid. An enumeration represents the contents of each grid cell:
+  #
+  #   * 0: Wall (`#`)
+  #   * 1: Empty (`<space>`)
+  #   * 2: Pill
+  #   * 3: Power pill
+  #   * 4: Fruit location
+  #   * 5: Lambda-Man starting position
+  #   * 6: Ghost starting position
+  #
+  # For example, this map
+  #
+  #   #####
+  #   ##.##
+  #   #.\%#
+  #   ##.##
+  #   #####
+  "(list (list 0 0 0 0 0) (list 0 0 2 0 0) (list 0 2 1 4 0) (list 0 0 2 0 0) (list 0 0 0 0 0))",
+
+  # The Lambda-Man status is a 5-tuple consisting of:
+  #   1. Lambda-Man's vitality;
+  #   2. Lambda-Man's current location, as an (x,y) pair;
+  #   3. Lambda-Man's current direction;
+  #   4. Lambda-Man's remaining number of lives;
+  #   5. Lambda-Man's current score.
+  "(list 4 (cons 11 16) 0 3 0)",
+
+  # The status for each ghost is a 3-tuple consisting of
+  #   1. the ghost's vitality
+  #   2. the ghost's current location, as an (x,y) pair
+  #   3. the ghost's current direction
+  #
+  # The Ghosts' vitality is an enumeration:
+  #   * 0: standard;
+  #   * 1: fright mode;
+  #   * 2: invisible.
+  #
+  # The Ghosts' and Lambda-Man's direction is an enumeration:
+  #   * 0: up;
+  #   * 1: right;
+  #   * 2: down;
+  #   * 3: left.
+  "(list 7 8 9)",
+
+  # The status of the fruit is a number which is a countdown to the expiry of
+  # the current fruit, if any.
+  #   * 0: no fruit present;
+  #   * n > 0: fruit present: the number of game ticks remaining while the
+  #            fruit will will be present.
+  "0"
+]
+
+def get_world(tuples)
+  return "(list #{tuples.join(" ")})"
+end
+
 @spec = <<SPEC
-(current_pos (list (list 1 2 3) (list 4 (cons 11 16) 6) (list 7 8 9)))
+(current_pos #{get_world(tuples)})
 => (11, 16)
 --
 (search 1 2 (list (list 1 2 3) (list 4 5 6)))
