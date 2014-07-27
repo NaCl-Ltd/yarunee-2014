@@ -37,7 +37,7 @@ tuples = [
   #   3. Lambda-Man's current direction;
   #   4. Lambda-Man's remaining number of lives;
   #   5. Lambda-Man's current score.
-  "(list 4 (cons 2 2) 0 3 0)",
+  "(list 0 (cons 2 2) 0 3 0)",
 
   # The status for each ghost is a 3-tuple consisting of
   #   1. the ghost's vitality
@@ -75,6 +75,12 @@ def update_tuples(tuples, index, tuple)
 end
 
 @spec = <<SPEC
+(current_vit #{get_world(tuples)})
+=> 0
+--
+(current_vit #{update_tuples(tuples, 1, "(list 4 (cons 11 16) 1 3 0)")})
+=> 4
+--
 (current_pos #{get_world(tuples)})
 => (2, 2)
 --
