@@ -21,6 +21,11 @@ task :ai_spec do
   sh "bundle exec ruby simulator/run_spec.rb"
 end
 
+desc "Run lambdaman AI"
+task :run_ai do
+  sh "bundle exec ruby simulator/run_ai.rb"
+end
+
 desc "Build solution file"
 task :solution do
   chdir "code" do
