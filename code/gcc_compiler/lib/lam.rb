@@ -15,7 +15,7 @@ module Lam
   end
 
   def self.d(str)
-    puts str if ENV["D"]
+    $stderr.puts str if ENV["D"]
   end
 
   # S-式の文字列をlam ASTに変換するクラス
