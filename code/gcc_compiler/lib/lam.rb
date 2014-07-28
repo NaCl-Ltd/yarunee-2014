@@ -267,7 +267,7 @@ module Lam
     end
     def self.included_syms(expr, syms)
       case expr
-      when Array then expr.map{|x| included_syms(x, syms)}.inject(:+)
+      when Array then expr.map{|x| included_syms(x, syms)}.inject(:+) || Set[]
       when Symbol
         if syms.include?(expr) then Set[expr] else Set[] end
       else Set[]
