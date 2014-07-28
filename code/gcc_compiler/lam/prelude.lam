@@ -89,7 +89,6 @@
 (define (rbtree-has-color? node color)
   (and (not (rbtree-empty? node))
        (= (rbtree-color node) color)))
-       ;(= (rbtree-color node))))
 
 (define (rbtree-red? node)
   (rbtree-has-color? node rbtree-red))
@@ -232,8 +231,8 @@
          (rbtree-right (rbtree-right right))
          (rbtree-key (rbtree-right right))
          (rbtree-value (rbtree-right right)))
-       (rbtree-key (rbtree-left right))
-       (rbtree-value (rbtree-left right))))
+       (rbtree-key right)
+       (rbtree-value right)))
     ; balance color a x b = T color a x b
     (else
       (rbtree-make-node color left right key val))))
