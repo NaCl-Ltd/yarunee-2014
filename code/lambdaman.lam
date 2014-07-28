@@ -119,9 +119,6 @@
 (define (turn_opposite dir)
   (if (> (+ dir 2) 3) (- dir 2) (+ dir 2)))
 
-(define (mod x y)
-    (- x (* (/ x y) y)))
-
 ; 擬似ランダム(true/false)
 ; とりあえず敵の位置(pos: {0: x座標, 1: y座標})をシードにしたもの
 (define (binrandom world pos)

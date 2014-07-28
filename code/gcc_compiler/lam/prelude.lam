@@ -19,6 +19,9 @@
 (define (or x y) (or x y))
 (define (and x y) (and x y))
 
+(define (mod x y)
+  (- x (* (/ x y) y)))
+
 (define (not x)
   (if x false true))
 
