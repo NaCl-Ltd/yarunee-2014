@@ -123,9 +123,12 @@
     (- x (* (/ x y) y)))
 
 ; 擬似ランダム(true/false)
-; とりあえず敵の位置をシードにしたもの
-(define (binrandom world)
-  (= 1 (mod (list-ref (car (ghost_locations world)) 0) 2)))
+; とりあえず敵の位置(pos: {0: x座標, 1: y座標})をシードにしたもの
+(define (binrandom world pos)
+  (= 1 (mod (if pos
+              (car (car (ghost_locations world)))
+              (cdr (car (ghost_locations world))))
+        2)))
 
 ; 進む方向の探索関数
 ; 進んでよいか判定する関数と現在方向を受け取る
@@ -149,7 +152,7 @@
             (if (to_go? (turn_left dir)) 1 0)))
         1
       )
-      (if (binrandom world) ; 擬似ランダムな分岐
+      (if (binrandom world 0) ; 擬似ランダムな分岐
         (cond
           ( ; 同じ方向に行けるか
             (to_go? dir)
@@ -165,18 +168,34 @@
           )
           ( else default )
         )
-        (cond
-          ( ; 右折可能か？
-            (to_go? (turn_right dir))
-            (cons state (turn_right dir))
+        (if (binrandom world 1)
+          (cond
+            ( ; 右折可能か？
+              (to_go? (turn_right dir))
+              (cons state (turn_right dir))
+            )
+            ( ; 左折可能か？
+              (to_go? (turn_left dir))
+              (cons state (turn_left dir))
+            )
+            ( ; 同じ方向に行けるか
+              (to_go? dir)
+              (cons state dir)
+            )
           )
-          ( ; 左折可能か？
-            (to_go? (turn_left dir))
-            (cons state (turn_left dir))
-          )
-          ( ; 同じ方向に行けるか
-            (to_go? dir)
-            (cons state dir)
+          (cond
+            ( ; 左折可能か？
+              (to_go? (turn_left dir))
+              (cons state (turn_left dir))
+            )
+            ( ; 右折可能か？
+              (to_go? (turn_right dir))
+              (cons state (turn_right dir))
+            )
+            ( ; 同じ方向に行けるか
+              (to_go? dir)
+              (cons state dir)
+            )
           )
         )
       )
@@ -213,16 +232,19 @@
 
 ; デバッグ用
 ; 上の(cons 0 step)をコメントアウトし、こちらを有効化してlman.htmlに突っ込む
-; (let ((dummy_map (list (list 0 0 0)
-;                        (list 0 1 0)
-;                        (list 0 0 0)))
+; (let ((dummy_map (list (list 0 0 0 0 0 0)
+;                        (list 0 0 0 0 0 0)
+;                        (list 0 1 1 1 0 0)
+;                        (list 0 0 1 0 0 0)
+;                        (list 0 0 0 0 0 0)
+;                        (list 0 0 0 0 0 0)))
 ;       (dummy_man (cons 0            ; vitality
-;                  (cons (cons 1 1)   ; pos
+;                  (cons (cons 2 2)   ; pos
 ;                  (cons 0            ; dir
 ;                  (cons 3            ; lives
 ;                        0)))))       ; score
 ;       (dummy_ghosts (list (cons 0          ; mode
-;                           (cons (cons 1 1) ; pos
+;                           (cons (cons 0 1) ; pos
 ;                                 0))        ; dir
 ;                           (cons 0
 ;                           (cons (cons 1 1)
