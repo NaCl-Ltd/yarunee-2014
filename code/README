@@ -7,8 +7,8 @@
 
 ## Compiling
 
-Output lambdaman.gcc, ghost0.ghc, ghost1.ghc, ghost2.ghc and ghost3.ghc
-to solution directory by following commands:
+Output solution/lambdaman.gcc and solution/ghost[0-3].ghc
+by following commands:
 ```sh
 $ bundle
 $ bundle exec rake solution
