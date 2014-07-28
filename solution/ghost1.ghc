@@ -1,0 +1,110 @@
+int 3 ; 0 checkinit:
+int 5 ; 1
+mov c,a ; 2
+mov d,b ; 3
+int 3 ; 4
+int 4 ; 5
+jeq 9,a,c ; 6 (init)
+jeq 9,d,b ; 7 (init)
+jeq 14,0,0 ; 8 (checkinitend)
+int 8 ; 9 init:
+mov [254],4 ; 10
+mov c,0 ; 11
+mov d,0 ; 12
+mov e,0 ; 13
+jeq 33,[254],0 ; 14 checkinitend: (fickleend)
+mov a,[254] ; 15
+mov a,255 ; 16 fickle:
+mov b,0 ; 17
+mov c,255 ; 18
+inc c ; 19 fickleloop:
+jgt 24,[c],a ; 20 (fickleloopend)
+mov a,[c] ; 21
+mov b,c ; 22
+jlt 19,c,3 ; 23 (fickleloop)
+mov a,b ; 24 fickleloopend:
+int 0 ; 25
+int 3 ; 26
+int 6 ; 27
+inc [b] ; 28
+dec [254] ; 29
+mov a,0 ; 30
+mov b,0 ; 31
+hlt ; 32
+int 8 ; 33 fickleend:
+mov a,0 ; 34
+mov b,0 ; 35
+mov c,0 ; 36
+mov d,0 ; 37
+mov e,0 ; 38
+mov f,0 ; 39
+int 3 ; 40
+mov [0],a ; 41
+int 5 ; 42
+mov [1],a ; 43
+mov [2],b ; 44
+mov a,[0] ; 45
+int 6 ; 46
+mov [3],b ; 47
+int 1 ; 48
+mov [4],a ; 49
+mov [5],b ; 50
+mov c,[4] ; 51 lookpos:
+mov d,[5] ; 52
+sub c,[6] ; 53
+sub d,[7] ; 54
+mov [8],[4] ; 55
+mov [9],[5] ; 56
+mov a,4 ; 57
+dec a ; 58 forlookpos:
+add [8],c ; 59
+add [9],d ; 60
+jeq 58,a,0 ; 61 (forlookpos)
+mov a,[8] ; 62
+mov b,[9] ; 63
+mov a,[1] ; 64 horizontalcheck:
+mov b,[8] ; 65
+jgt 69,a,b ; 66 (leftcheck)
+jlt 75,a,b ; 67 (rightcheck)
+jeq 81,0,0 ; 68 (verticalcheck)
+mov c,1 ; 69 leftcheck:
+dec a ; 70
+int 7 ; 71
+jeq 81,a,0 ; 72 (verticalcheck)
+mov a,3 ; 73
+jeq 104,0,0 ; 74 (emit)
+mov d,1 ; 75 rightcheck:
+inc a ; 76
+int 7 ; 77
+jeq 81,a,0 ; 78 (verticalcheck)
+mov a,1 ; 79
+jeq 104,0,0 ; 80 (emit)
+mov a,[2] ; 81 verticalcheck:
+mov b,[9] ; 82
+jgt 86,a,b ; 83 (upcheck)
+jlt 95,a,b ; 84 (downcheck)
+jeq 104,0,0 ; 85 (emit)
+mov e,1 ; 86 upcheck:
+dec a ; 87
+int 7 ; 88
+jeq 92,a,0 ; 89 (upfallback)
+mov a,0 ; 90
+jeq 104,0,0 ; 91 (emit)
+jeq 69,c,0 ; 92 upfallback: (leftcheck)
+jeq 75,d,0 ; 93 (rightcheck)
+jeq 95,f,0 ; 94 (downcheck)
+mov f,1 ; 95 downcheck:
+inc a ; 96
+int 7 ; 97
+jeq 101,a,0 ; 98 (downfallback)
+mov a,2 ; 99
+jeq 104,0,0 ; 100 (emit)
+jeq 75,d,0 ; 101 downfallback: (rightcheck)
+jeq 69,c,0 ; 102 (leftcheck)
+jeq 86,e,0 ; 103 (upcheck)
+int 0 ; 104 emit:
+jeq 106,0,0 ; 105 (end)
+int 1 ; 106 end:
+mov [6],a ; 107
+mov [7],b ; 108
+hlt ; 109

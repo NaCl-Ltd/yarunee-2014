@@ -1,0 +1,24 @@
+int 3 ; 0
+int 5 ; 1
+mov d,a ; 2
+mov e,b ; 3
+inc a ; 4
+int 7 ; 5
+mov f,0 ; 6
+jeq 21,a,0 ; 7 (end)
+mov a,d ; 8
+mov b,e ; 9
+dec a ; 10
+int 7 ; 11
+mov f,2 ; 12
+jeq 21,a,0 ; 13 (end)
+mov a,d ; 14
+mov b,e ; 15
+inc b ; 16
+int 7 ; 17
+mov f,1 ; 18
+jeq 21,a,0 ; 19 (end)
+mov f,3 ; 20
+mov a,f ; 21 end:
+int 0 ; 22
+hlt ; 23

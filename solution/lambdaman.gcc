@@ -1,8 +1,865 @@
+DUM 44
 LDC 0
-LDF 4
+LDC 1
+LDC 0
+LDF 52
+LDF 56
+LDF 60
+LDF 64
+LDF 68
+LDF 72
+LDF 76
+LDF 80
+LDF 84
+LDF 87
+LDF 90
+LDF 98
+LDF 105
+LDF 115
+LDF 133
+LDF 151
+LDF 163
+LDF 182
+LDF 216
+LDF 222
+LDF 229
+LDF 242
+LDF 254
+LDF 271
+LDF 281
+LDF 289
+LDF 307
+LDF 338
+LDF 358
+LDF 403
+LDF 418
+LDF 425
+LDF 438
+LDF 477
+LDF 488
+LDF 535
+LDF 548
+LDF 561
+LDF 576
+LDF 596
+LDF 839
+LDF 48
+RAP 44
+RTN
+LDC 0
+LD 0 43 ; varref step
 CONS
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+ADD
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+SUB
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+MUL
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+DIV
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+CEQ
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+CGT
+RTN
+LD 0 1 ; varref y
+LD 0 0 ; varref x
+CGT
+RTN
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+CONS
+RTN
+LD 0 0 ; varref x
+CAR
+RTN
+LD 0 0 ; varref x
+CDR
+RTN
+LD 0 0 ; varref x
+LD 0 0 ; varref x
+LD 0 1 ; varref y
+DIV
+LD 0 1 ; varref y
+MUL
+SUB
+RTN
+LD 0 0 ; varref x
+TSEL 101 103
+RTN
+LD 1 2 ; varref false
+RTN
+LD 1 1 ; varref true
+RTN
+LD 0 0 ; varref x
+ATOM
+TSEL 109 113
+RTN
+LD 0 0 ; varref x
+LDC 0
+CEQ
+RTN
+LDC 0
+RTN
+LD 0 2 ; varref clist
+LD 1 15 ; varref null?
+AP 1
+TSEL 120 122
+RTN
+LD 0 1 ; varref knil
+RTN
+LD 0 0 ; varref kons
+LD 0 1 ; varref knil
+LD 0 2 ; varref clist
+CAR
+LD 0 0 ; varref kons
+AP 2
+LD 0 2 ; varref clist
+CDR
+LD 1 16 ; varref fold
+TAP 3
+RTN
+LD 0 2 ; varref clist
+LD 1 15 ; varref null?
+AP 1
+TSEL 138 140
+RTN
+LD 0 1 ; varref knil
+RTN
+LD 0 2 ; varref clist
+CAR
+LD 0 0 ; varref kons
+LD 0 1 ; varref knil
+LD 0 2 ; varref clist
+CDR
+LD 1 17 ; varref fold-right
+AP 3
+LD 0 0 ; varref kons
+TAP 2
+RTN
+LDF 157
+LD 1 0 ; varref nil
+LD 0 1 ; varref clist
+LD 1 17 ; varref fold-right
+AP 3
+RTN
+LD 0 0 ; varref x
+LD 1 0 ; varref proc
+AP 1
+LD 0 1 ; varref l
+CONS
+RTN
+LDF 169
+LD 1 2 ; varref false
+LD 0 1 ; varref ls
+LD 1 16 ; varref fold
+AP 3
+RTN
+LD 0 0 ; varref b
+LDF 173
+TAP 1
+RTN
+LD 0 0 ; varref x
+TSEL 176 178
+RTN
+LD 0 0 ; varref x
+RTN
+LD 1 1 ; varref item
+LD 2 0 ; varref pred
+TAP 1
+RTN
+LD 0 0 ; varref clist
+LD 1 15 ; varref null?
+AP 1
+LDF 189
+AP 1
+TSEL 198 200
+RTN
+LD 0 0 ; varref x
+TSEL 192 194
+RTN
+LD 0 0 ; varref x
+RTN
+LDC 0
+LD 1 1 ; varref n
+CGT
+RTN
+LD 1 0 ; varref nil
+RTN
+LD 0 1 ; varref n
+LDC 0
+CEQ
+TSEL 205 208
+RTN
+LD 0 0 ; varref clist
+CAR
+RTN
+LD 0 0 ; varref clist
+CDR
+LD 0 1 ; varref n
+LDC 1
+SUB
+LD 1 20 ; varref list-ref
+TAP 2
+RTN
+LD 0 0 ; varref world
+CDR
+CAR
+CDR
+CAR
+RTN
+LD 0 0 ; varref world
+CDR
+CAR
+CDR
+CDR
+CAR
+RTN
+LDF 237
+LD 0 0 ; varref world
+LDC 2
+LD 1 20 ; varref list-ref
+AP 2
+LD 1 18 ; varref map
+AP 2
+RTN
+LD 0 0 ; varref x
+LDC 1
+LD 2 20 ; varref list-ref
+AP 2
+RTN
+LD 0 0 ; varref c1
+CAR
+LD 0 1 ; varref c2
+CAR
+ADD
+LD 0 0 ; varref c1
+CDR
+LD 0 1 ; varref c2
+CDR
+ADD
+CONS
+RTN
+LD 0 1 ; varref y
+LDC 0
+CEQ
+TSEL 259 262
+RTN
+LD 0 2 ; varref li
+CAR
+RTN
+LD 0 0 ; varref self
+LD 0 1 ; varref y
+LDC 1
+SUB
+LD 0 2 ; varref li
+CDR
+LD 0 0 ; varref self
+TAP 3
+RTN
+LD 1 25 ; varref lsearch
+LD 0 1 ; varref x
+LD 1 25 ; varref lsearch
+LD 0 0 ; varref y
+LD 0 2 ; varref map
+LD 1 25 ; varref lsearch
+AP 3
+LD 1 25 ; varref lsearch
+TAP 3
+RTN
+LD 0 0 ; varref xy
+CDR
+LD 0 0 ; varref xy
+CAR
+LD 0 1 ; varref map
+LD 1 26 ; varref search
+AP 3
+RTN
+LD 0 0 ; varref world
+LD 1 21 ; varref current_pos
+AP 1
+LD 0 1 ; varref dir_cons
+LD 1 24 ; varref plus_cons
+AP 2
+LD 0 0 ; varref world
+CAR
+LD 1 27 ; varref map_pos
+AP 2
+LDC 0
+CGT
+TSEL 303 305
+RTN
+LDC 1
+RTN
+LDC 0
+RTN
+LD 0 0 ; varref dir
+LDC 0
+CEQ
+TSEL 312 316
+RTN
+LDC 0
+LDC -1
+CONS
+RTN
+LD 0 0 ; varref dir
+LDC 1
+CEQ
+TSEL 321 325
+RTN
+LDC 1
+LDC 0
+CONS
+RTN
+LD 0 0 ; varref dir
+LDC 2
+CEQ
+TSEL 330 334
 RTN
 LDC 0
 LDC 1
+CONS
+RTN
+LDC -1
+LDC 0
+CONS
+RTN
+LD 0 0 ; varref pos1
+CAR
+LD 0 1 ; varref pos2
+CAR
+CEQ
+TSEL 345 356
+RTN
+LD 0 0 ; varref pos1
+CDR
+LD 0 1 ; varref pos2
+CDR
+CEQ
+TSEL 352 354
+RTN
+LDC 1
+RTN
+LDC 0
+RTN
+LDC 0
+RTN
+LD 0 0 ; varref world
+CDR
+CDR
+CAR
+LDF 365
+TAP 1
+RTN
+LDF 370
+LD 0 0 ; varref ghosts
+LD 2 18 ; varref map
+AP 2
+RTN
+LD 0 0 ; varref ghost
+CDR
+CAR
+LD 0 0 ; varref ghost
+CDR
+CDR
+LD 0 0 ; varref ghost
+CAR
+LDF 381
+AP 3
+RTN
+LD 0 2 ; varref mode
+LDC 0
+CEQ
+TSEL 386 397
+RTN
+LD 0 0 ; varref pos
+LD 0 0 ; varref pos
+LD 0 1 ; varref dir
+LD 4 29 ; varref direction
+AP 1
+LD 4 24 ; varref plus_cons
+AP 2
+LDC 0
+CONS
+CONS
+RTN
+LDC -1
+LDC -1
+CONS
+LDC 0
+CONS
+RTN
+LDF 408
+LD 0 0 ; varref danger_poss
+LD 1 19 ; varref any?
+AP 2
+RTN
+LDF 413
+LD 0 0 ; varref row
+LD 2 19 ; varref any?
+AP 2
+RTN
+LD 0 0 ; varref pos_
+LD 2 1 ; varref pos
+LD 3 30 ; varref is_equal_pos
+AP 2
+RTN
+LD 0 0 ; varref world
+CDR
+CDR
+CDR
+LDC 0
+CGT
+RTN
+LD 0 0 ; varref world
+LD 1 21 ; varref current_pos
+AP 1
+LD 0 1 ; varref dir_cons
+LD 1 24 ; varref plus_cons
+AP 2
+LD 0 0 ; varref world
+LD 0 1 ; varref dir_cons
+LD 0 2 ; varref danger_poss
+LDC 5
+LD 1 35 ; varref see_ghost_from?
+AP 5
+RTN
+LD 0 4 ; varref dist
+LDC 0
+CEQ
+TSEL 443 445
+RTN
+LD 1 2 ; varref false
+RTN
+LD 0 0 ; varref pos
+LD 0 1 ; varref world
+CAR
+LD 1 27 ; varref map_pos
+AP 2
+LDC 0
+CEQ
+TSEL 454 456
+RTN
+LD 1 2 ; varref false
+RTN
+LD 0 3 ; varref danger_poss
+LD 0 0 ; varref pos
+LD 1 32 ; varref ghost_coming?
+AP 2
+TSEL 462 464
+RTN
+LD 1 1 ; varref true
+RTN
+LD 0 0 ; varref pos
+LD 0 2 ; varref dir_cons
+LD 1 24 ; varref plus_cons
+AP 2
+LD 0 1 ; varref world
+LD 0 2 ; varref dir_cons
+LD 0 3 ; varref danger_poss
+LD 0 4 ; varref dist
+LDC 1
+SUB
+LD 1 35 ; varref see_ghost_from?
+TAP 5
+RTN
+LD 0 0 ; varref world
+LD 1 21 ; varref current_pos
+AP 1
+LD 0 1 ; varref dir_cons
+LD 1 24 ; varref plus_cons
+AP 2
+LD 0 0 ; varref world
+LD 0 1 ; varref dir_cons
+LD 1 37 ; varref see_pill_from?
+AP 3
+RTN
+LD 0 0 ; varref pos
+LD 0 1 ; varref world
+CAR
+LD 1 27 ; varref map_pos
+AP 2
+LDF 496
+TAP 1
+RTN
+LD 0 0 ; varref obj
+LDC 0
+CEQ
+TSEL 501 503
+RTN
+LD 2 2 ; varref false
+RTN
+LD 0 0 ; varref obj
+LDC 2
+CEQ
+TSEL 508 510
+RTN
+LD 2 1 ; varref true
+RTN
+LD 0 0 ; varref obj
+LDC 3
+CEQ
+TSEL 515 517
+RTN
+LD 2 1 ; varref true
+RTN
+LD 0 0 ; varref obj
+LDC 4
+CEQ
+TSEL 522 526
+RTN
+LD 1 1 ; varref world
+LD 2 33 ; varref fruits_appering?
+TAP 1
+RTN
+LD 1 0 ; varref pos
+LD 1 2 ; varref dir_cons
+LD 2 24 ; varref plus_cons
+AP 2
+LD 1 1 ; varref world
+LD 1 2 ; varref dir_cons
+LD 2 37 ; varref see_pill_from?
+AP 3
+RTN
+LD 0 0 ; varref dir
+LDC 1
+ADD
+LDC 3
+CGT
+TSEL 542 544
+RTN
+LDC 0
+RTN
+LD 0 0 ; varref dir
+LDC 1
+ADD
+RTN
+LDC 0
+LD 0 0 ; varref dir
+LDC 1
+SUB
+CGT
+TSEL 555 557
+RTN
+LDC 3
+RTN
+LD 0 0 ; varref dir
+LDC 1
+SUB
+RTN
+LD 0 0 ; varref dir
+LDC 2
+ADD
+LDC 3
+CGT
+TSEL 568 572
+RTN
+LD 0 0 ; varref dir
+LDC 2
+SUB
+RTN
+LD 0 0 ; varref dir
+LDC 2
+ADD
+RTN
+LDC 1
+LD 0 1 ; varref pos
+SEL 584 590
+LDC 2
+LD 1 13 ; varref mod
+AP 2
+CEQ
+RTN
+LD 0 0 ; varref world
+LD 1 23 ; varref ghost_locations
+AP 1
+CAR
+CAR
+JOIN
+LD 0 0 ; varref world
+LD 1 23 ; varref ghost_locations
+AP 1
+CAR
+CDR
+JOIN
+LD 0 1 ; varref world
+LD 1 31 ; varref danger_zone
+AP 1
+LDF 602
+TAP 1
+RTN
+LDF 606
+LDF 626
+AP 1
+RTN
+LD 2 1 ; varref world
+LD 0 0 ; varref dir
+LD 3 29 ; varref direction
+AP 1
+LD 1 0 ; varref danger_poss
+LD 3 34 ; varref see_ghost?
+AP 3
+LD 3 14 ; varref not
+AP 1
+TSEL 617 624
+RTN
+LD 2 1 ; varref world
+LD 0 0 ; varref dir
+LD 3 29 ; varref direction
+AP 1
+LD 2 0 ; varref func
+AP 2
+RTN
+LDC 0
+RTN
+LD 3 3 ; varref +
+LDC 0
+LD 2 3 ; varref dir
+LD 0 0 ; varref to_go?
+AP 1
+SEL 654 656
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+SEL 658 660
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+SEL 662 664
+LDC 0
+CONS
+CONS
+CONS
+LD 3 16 ; varref fold
+AP 3
+LDC 1
+CGT
+TSEL 666 789
+RTN
+LDC 1
+JOIN
+LDC 0
+JOIN
+LDC 1
+JOIN
+LDC 0
+JOIN
+LDC 1
+JOIN
+LDC 0
+JOIN
+LD 2 1 ; varref world
+LDC 0
+LD 3 41 ; varref binrandom
+AP 2
+TSEL 672 709
+RTN
+LD 2 3 ; varref dir
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 677 681
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 688 694
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 701 707
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+CONS
+RTN
+LD 2 4 ; varref default
+RTN
+LD 2 1 ; varref world
+LDC 1
+LD 3 41 ; varref binrandom
+AP 2
+TSEL 715 752
+RTN
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 722 728
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 735 741
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 746 750
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+CONS
+RTN
+LDC 0
+RTN
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 759 765
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 772 778
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 783 787
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+CONS
+RTN
+LDC 0
+RTN
+LD 2 3 ; varref dir
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 794 798
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 805 811
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 38 ; varref turn_right
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 818 824
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 39 ; varref turn_left
+AP 1
+CONS
+RTN
+LD 2 3 ; varref dir
+LD 3 40 ; varref turn_opposite
+AP 1
+LD 0 0 ; varref to_go?
+AP 1
+TSEL 831 837
+RTN
+LD 2 2 ; varref state
+LD 2 3 ; varref dir
+LD 3 40 ; varref turn_opposite
+AP 1
+CONS
+RTN
+LD 2 4 ; varref default
+RTN
+LD 1 36 ; varref see_pill?
+LD 0 1 ; varref world
+LD 0 0 ; varref state
+LD 0 1 ; varref world
+LD 1 22 ; varref current_dir
+AP 1
+LD 1 28 ; varref is_empty_pos
+LD 0 1 ; varref world
+LD 0 0 ; varref state
+LD 0 1 ; varref world
+LD 1 22 ; varref current_dir
+AP 1
+LDC 0
+LD 0 1 ; varref world
+LD 1 22 ; varref current_dir
+AP 1
+CONS
+LD 1 42 ; varref search_round
+AP 5
+LD 1 42 ; varref search_round
+AP 5
+RTN
+LDC 0
+LD 0 43 ; varref step
 CONS
 RTN

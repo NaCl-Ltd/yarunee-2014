@@ -1,0 +1,4 @@
+jlt 2,a,4 ; 0
+mov a,255 ; 1
+inc a ; 2
+int 0 ; 3
