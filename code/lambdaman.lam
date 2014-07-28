@@ -1,5 +1,9 @@
 ; vim: set ft=scheme:
 
+(define curr_world -1) ; mainで値を入れる
+(define world_h -1)
+(define world_w -1)
+
 ; 現在のpower pillモードの残りを返す
 (define (current_vit world) (car (car (cdr world))))
 
@@ -217,12 +221,17 @@
 
 ; step関数
 (define (step state world)
-  ; pillを優先的に探索
-  (search_round see_pill? world state (current_dir world)
-    ; pillが周囲になければ壁のない方向へ
-    (search_round is_empty_pos world state (current_dir world)
-      ; デフォルトは前進
-      (cons 0 (current_dir world)))))
+  (begin
+    (set! curr_world world)
+    (set! world_h (length (tuple4_0 world)))
+    (set! world_w (length (car (tuple4_0 world))))
+
+    ; pillを優先的に探索
+    (search_round see_pill? world state (current_dir world)
+      ; pillが周囲になければ壁のない方向へ
+      (search_round is_empty_pos world state (current_dir world)
+        ; デフォルトは前進
+        (cons 0 (current_dir world))))))
 
 ; main
 (cons 0 step)
