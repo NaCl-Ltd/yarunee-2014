@@ -342,6 +342,7 @@ module Lam
 
         with(_[:debug, ex]){
           compile(ex, env) +
+          compile(ex, env) +  # DBUGがpopするので2回compileしている
           Gcc.new([Op[:DBUG]])
         }
 
