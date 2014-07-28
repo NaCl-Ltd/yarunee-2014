@@ -46,6 +46,13 @@
 (define (map proc clist)
   (fold-right (lambda (x l) (cons (proc x) l)) nil clist))
 
+; リストからnil(=0)を取り除く
+(define (compact ls)
+  (fold-right (lambda (item sum)
+                (if (null? item) sum (cons item sum)))
+              nil
+              ls))
+
 ; リスト内にpredが真になる要素があるとき真を返す
 (define (any? pred ls)
   (fold (lambda (b item) (or b (pred item))) false ls))
@@ -79,6 +86,17 @@
   (if (> a b)
     nil
     (cons a (upto (+ a 1) b))))
+
+; --- タプルの操作
+
+(define (tuple3_0 x) (car x))
+(define (tuple3_1 x) (car (cdr x)))
+(define (tuple3_2 x) (cdr (cdr x)))
+
+(define (tuple4_0 x) (car x))
+(define (tuple4_1 x) (car (cdr x)))
+(define (tuple4_2 x) (car (cdr (cdr x))))
+(define (tuple4_3 x) (cdr (cdr (cdr x))))
 
 ; --- 赤黒木
 ;
