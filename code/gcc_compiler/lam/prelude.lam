@@ -78,6 +78,13 @@
     (cons a (upto (+ a 1) b))))
 
 ; --- 赤黒木
+;
+; 使用例(empty, insert, lookup)
+; (let
+;   ((tree (rbtree-insert 0 8 (rbtree-insert 1 6 (rbtree-insert 2 9 rbtree-empty)))))
+;   (list (rbtree-lookup 0 tree)  ;=> 8
+;     (rbtree-lookup 1 tree)      ;=> 6
+;     (rbtree-lookup 2 tree)))    ;=> 9
 (define rbtree-red 0)
 (define rbtree-black 1)
 
@@ -236,11 +243,5 @@
     ; balance color a x b = T color a x b
     (else
       (rbtree-make-node color left right key val))))
-
-;(let
-;  ((tree (rbtree-insert 0 8 (rbtree-insert 1 6 (rbtree-insert 2 9 rbtree-empty)))))
-;  (list (rbtree-lookup 0 tree)
-;    (rbtree-lookup 1 tree)
-;    (rbtree-lookup 2 tree)))
 
 ; vim: set filetype=lisp :
