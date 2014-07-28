@@ -81,7 +81,7 @@
 (define rbtree-red 0)
 (define rbtree-black 1)
 
-(define rbtree-empty 0) ; nil
+(define rbtree-empty (list)) ; nil
 
 (define (rbtree-empty? node)
   (null? node))

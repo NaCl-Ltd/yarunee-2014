@@ -208,8 +208,8 @@ module Lam
           with(_[:define, _[name, *params], body]){
             [name, [:lambda, params, macro_transformer.transform(body)]]
           }
-          with(_[:define, name, macro_transformer.transform(val)]){
-            [name, val]
+          with(_[:define, name, val]){
+            [name, macro_transformer.transform(val)]
           }
           with(_){
             raise Error, "malformed define: #{d.inspect}"
