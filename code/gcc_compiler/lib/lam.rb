@@ -225,9 +225,10 @@ module Lam
 
       gvars = filter_gvars(global_variables, main)
 
+      Lam.d("-- main(マクロ展開前)")
       Lam.d(main.pretty_inspect)
-      Lam.d("--")
 
+      Lam.d("-- main(マクロ展開後)")
       ast = macro_transformer.transform(main)
       Lam.d(ast.pretty_inspect)
       Lam.d("--")
@@ -237,6 +238,7 @@ module Lam
 
     # 使われていないdefineを除く
     def self.filter_gvars(global_variables, main)
+      #return global_variables
       names = global_variables.map(&:first)
       calls = global_variables.map{|name, expr|
         [name, included_syms(expr, names)]
@@ -253,6 +255,8 @@ module Lam
         q += [name] + calls[name].to_a
       end
 
+      Lam.d "-- all defines"
+      Lam.d names.inspect
       Lam.d "-- used defines"
       Lam.d used.inspect
       Lam.d "--"
