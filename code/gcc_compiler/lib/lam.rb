@@ -2,6 +2,7 @@ require 'pattern-match'
 require 'treetop'
 require 'forwardable'
 require 'pp'
+require 'set'
 
 Treetop.load File.join(__dir__, "sexp.treetop")
 
@@ -222,8 +223,7 @@ module Lam
         with(_){}
       }
 
-      # TODO: main内で使われてない関数はlibdefsから除くようにするとよいかも
-      # 使われているかの判定は単純に正規表現とかでよいので
+      gvars = filter_gvars(global_variables, main)
 
       Lam.d(main.pretty_inspect)
       Lam.d("--")
@@ -232,7 +232,42 @@ module Lam
       Lam.d(ast.pretty_inspect)
       Lam.d("--")
 
-      new.compile_main(ast, global_variables).emit
+      new.compile_main(ast, gvars).emit
+    end
+
+    # 使われていないdefineを除く
+    def self.filter_gvars(global_variables, main)
+      names = global_variables.map(&:first)
+      calls = global_variables.map{|name, expr|
+        [name, included_syms(expr, names)]
+      }.to_h
+
+      q = included_syms(main, names).to_a
+      used = q.to_set
+      visited = Set[]
+      until q.empty?
+        name = q.shift
+        next if visited.include?(name)
+        visited.merge([name])
+        used.merge([name] + calls[name].to_a)
+        q += [name] + calls[name].to_a
+      end
+
+      Lam.d "-- used defines"
+      Lam.d used.inspect
+      Lam.d "--"
+
+      return global_variables.select{|name, expr|
+        used.include?(name)
+      }
+    end
+    def self.included_syms(expr, syms)
+      case expr
+      when Array then expr.map{|x| included_syms(x, syms)}.inject(:+)
+      when Symbol
+        if syms.include?(expr) then Set[expr] else Set[] end
+      else Set[]
+      end
     end
     
     def compile_main(e, global_variables)
