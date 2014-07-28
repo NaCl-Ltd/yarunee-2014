@@ -358,6 +358,23 @@ module Lam
           Gcc.new([op])
         }
 
+        # 変数再代入
+        with(_[:set!, varname, expr]){
+          n, i = env.lookup(varname)
+          unless n
+            raise Error, "set!先の変数#{varname}が定義されていません"
+          end
+
+          op = Op[:ST, n, i]
+          op.comment = "set! #{varname}" 
+          compile(expr, env) +
+          Gcc.new([op])
+        }
+
+        with(_[:begin, *exprs]){
+          exprs.map{|x| compile(x, env)}.inject(:+)
+        }
+
         with(_[:lambda, params, body]){
           env.captured = true
 
