@@ -77,4 +77,166 @@
     nil
     (cons a (upto (+ a 1) b))))
 
+; --- 赤黒木
+(define rbtree-red 0)
+(define rbtree-black 1)
+
+(define rbtree-empty 0) ; nil
+
+(define (rbtree-empty? node)
+  (null? node))
+
+(define (rbtree-has-color? node color)
+  (and (not (rbtree-empty? node))
+       (= (rbtree-color node) color)))
+       ;(= (rbtree-color node))))
+
+(define (rbtree-red? node)
+  (rbtree-has-color? node rbtree-red))
+
+(define (rbtree-black? node)
+  (rbtree-has-color? node rbtree-black))
+
+(define (rbtree-make-node color left right key value)
+  (list color left right key value))
+
+(define (rbtree-color node)
+  (list-ref node 0))
+
+(define (rbtree-left node)
+  (list-ref node 1))
+
+(define (rbtree-right node)
+  (list-ref node 2))
+
+(define (rbtree-key node)
+  (list-ref node 3))
+
+(define (rbtree-value node)
+  (list-ref node 4))
+
+(define (rbtree-lookup key node)
+  (cond
+    ((rbtree-empty? node) nil)
+    ((< key (rbtree-key node))
+     (rbtree-lookup key (rbtree-left node)))
+    ((> key (rbtree-key node))
+     (rbtree-lookup key (rbtree-right node)))
+    (else (rbtree-value node))))
+
+(define (rbtree-make-black node)
+  (rbtree-make-node
+    rbtree-black
+    (rbtree-left node)
+    (rbtree-right node)
+    (rbtree-key node)
+    (rbtree-value node)))
+
+(define (rbtree-insert key val node)
+  (rbtree-make-black (rbtree-ins key val node)))
+
+(define (rbtree-ins key val node)
+  (cond
+    ((rbtree-empty? node)
+     (rbtree-make-node rbtree-red rbtree-empty rbtree-empty key val))
+    ((< key (rbtree-key node))
+     (rbtree-balance (rbtree-color node)
+             (rbtree-ins key val (rbtree-left node))
+             (rbtree-right node)
+             (rbtree-key node)
+             (rbtree-value node)))
+    ((> key (rbtree-key node))
+     (rbtree-balance (rbtree-color node)
+              (rbtree-left node)
+              (rbtree-ins key val (rbtree-right node))
+              (rbtree-key node)
+              (rbtree-value node)))
+    (else
+      (rbtree-make-node
+    (rbtree-color node) (rbtree-left node) (rbtree-right node)
+    key val))))
+
+(define (rbtree-balance color left right key val)
+  (cond
+    ((and (= color rbtree-black)
+      (and (rbtree-red? left) (rbtree-red? (rbtree-left left))))
+     (rbtree-make-node
+       rbtree-red
+       (rbtree-make-node
+     rbtree-black
+     (rbtree-left (rbtree-left left))
+     (rbtree-right (rbtree-left left))
+     (rbtree-key (rbtree-left left))
+     (rbtree-value (rbtree-left left)))
+     (rbtree-make-node
+       rbtree-black
+       (rbtree-right left)
+       right
+       key
+       val)
+     (rbtree-key left)
+     (rbtree-value left)))
+    ((and (= color rbtree-black)
+      (and (rbtree-red? left) (rbtree-red? (rbtree-right left))))
+     (rbtree-make-node
+       rbtree-red
+       (rbtree-make-node
+     rbtree-black
+     (rbtree-left left)
+     (rbtree-left (rbtree-right left))
+     (rbtree-key left)
+     (rbtree-value left))
+       (rbtree-make-node
+     rbtree-black
+     (rbtree-right (rbtree-right left))
+     right
+     key
+     val)
+       (rbtree-key (rbtree-right left))
+       (rbtree-value (rbtree-right left))))
+    ((and (= color rbtree-black)
+      (and (rbtree-red? right) (rbtree-red? (rbtree-left right))))
+     (rbtree-make-node
+       rbtree-red
+       (rbtree-make-node
+     rbtree-black
+     left
+     (rbtree-left (rbtree-left right))
+     key
+     val)
+       (rbtree-make-node
+     rbtree-black
+     (rbtree-right (rbtree-left right))
+     (rbtree-right right)
+     (rbtree-key right)
+     (rbtree-value right))
+       (rbtree-key (rbtree-left right))
+       (rbtree-value (rbtree-left right))))
+    ((and (= color rbtree-black)
+      (and (rbtree-red? right) (rbtree-red? (rbtree-right right))))
+     (rbtree-make-node
+       rbtree-red
+       (rbtree-make-node
+     rbtree-black
+     left
+     (rbtree-left right)
+     key
+     val)
+       (rbtree-make-node
+     rbtree-black
+     (rbtree-left (rbtree-right right))
+     (rbtree-right (rbtree-right right))
+     (rbtree-key (rbtree-right right))
+     (rbtree-value (rbtree-right right)))
+       (rbtree-key (rbtree-left right))
+       (rbtree-value (rbtree-left right))))
+    (else
+      (rbtree-make-node color left right key val))))
+
+;(let
+;  ((tree (rbtree-insert 0 8 (rbtree-insert 1 6 (rbtree-insert 2 9 rbtree-empty)))))
+;  (list (rbtree-lookup 0 tree)
+;    (rbtree-lookup 1 tree)
+;    (rbtree-lookup 2 tree)))
+
 ; vim: set filetype=lisp :
