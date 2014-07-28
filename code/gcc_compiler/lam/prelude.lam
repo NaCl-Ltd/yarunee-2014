@@ -153,83 +153,88 @@
               (rbtree-value node)))
     (else
       (rbtree-make-node
-    (rbtree-color node) (rbtree-left node) (rbtree-right node)
-    key val))))
+        (rbtree-color node) (rbtree-left node) (rbtree-right node)
+        key val))))
 
 (define (rbtree-balance color left right key val)
   (cond
+    ; balance B (T R (T R a x b) y c) z d = T R (T B a x b) y (T B c z d)
     ((and (= color rbtree-black)
       (and (rbtree-red? left) (rbtree-red? (rbtree-left left))))
      (rbtree-make-node
        rbtree-red
        (rbtree-make-node
-     rbtree-black
-     (rbtree-left (rbtree-left left))
-     (rbtree-right (rbtree-left left))
-     (rbtree-key (rbtree-left left))
-     (rbtree-value (rbtree-left left)))
-     (rbtree-make-node
-       rbtree-black
-       (rbtree-right left)
-       right
-       key
-       val)
-     (rbtree-key left)
-     (rbtree-value left)))
+         rbtree-black
+         (rbtree-left (rbtree-left left))
+         (rbtree-right (rbtree-left left))
+         (rbtree-key (rbtree-left left))
+         (rbtree-value (rbtree-left left)))
+       (rbtree-make-node
+         rbtree-black
+         (rbtree-right left)
+         right
+         key
+         val)
+       (rbtree-key left)
+       (rbtree-value left)))
+    ; balance B (T R a x (T R b y c)) z d = T R (T B a x b) y (T B c z d)
     ((and (= color rbtree-black)
       (and (rbtree-red? left) (rbtree-red? (rbtree-right left))))
      (rbtree-make-node
        rbtree-red
        (rbtree-make-node
-     rbtree-black
-     (rbtree-left left)
-     (rbtree-left (rbtree-right left))
-     (rbtree-key left)
-     (rbtree-value left))
+         rbtree-black
+         (rbtree-left left)
+         (rbtree-left (rbtree-right left))
+         (rbtree-key left)
+         (rbtree-value left))
        (rbtree-make-node
-     rbtree-black
-     (rbtree-right (rbtree-right left))
-     right
-     key
-     val)
+         rbtree-black
+         (rbtree-right (rbtree-right left))
+         right
+         key
+         val)
        (rbtree-key (rbtree-right left))
        (rbtree-value (rbtree-right left))))
+    ; balance B a x (T R (T R b y c) z d) = T R (T B a x b) y (T B c z d)
     ((and (= color rbtree-black)
       (and (rbtree-red? right) (rbtree-red? (rbtree-left right))))
      (rbtree-make-node
        rbtree-red
        (rbtree-make-node
-     rbtree-black
-     left
-     (rbtree-left (rbtree-left right))
-     key
-     val)
+         rbtree-black
+         left
+         (rbtree-left (rbtree-left right))
+         key
+         val)
        (rbtree-make-node
-     rbtree-black
-     (rbtree-right (rbtree-left right))
-     (rbtree-right right)
-     (rbtree-key right)
-     (rbtree-value right))
+         rbtree-black
+         (rbtree-right (rbtree-left right))
+         (rbtree-right right)
+         (rbtree-key right)
+         (rbtree-value right))
        (rbtree-key (rbtree-left right))
        (rbtree-value (rbtree-left right))))
+    ; balance B a x (T R b y (T R c z d)) = T R (T B a x b) y (T B c z d)
     ((and (= color rbtree-black)
       (and (rbtree-red? right) (rbtree-red? (rbtree-right right))))
      (rbtree-make-node
        rbtree-red
        (rbtree-make-node
-     rbtree-black
-     left
-     (rbtree-left right)
-     key
-     val)
+         rbtree-black
+         left
+         (rbtree-left right)
+         key
+         val)
        (rbtree-make-node
-     rbtree-black
-     (rbtree-left (rbtree-right right))
-     (rbtree-right (rbtree-right right))
-     (rbtree-key (rbtree-right right))
-     (rbtree-value (rbtree-right right)))
+         rbtree-black
+         (rbtree-left (rbtree-right right))
+         (rbtree-right (rbtree-right right))
+         (rbtree-key (rbtree-right right))
+         (rbtree-value (rbtree-right right)))
        (rbtree-key (rbtree-left right))
        (rbtree-value (rbtree-left right))))
+    ; balance color a x b = T color a x b
     (else
       (rbtree-make-node color left right key val))))
 
