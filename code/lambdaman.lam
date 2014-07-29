@@ -4,6 +4,90 @@
 (define world_h -1)
 (define world_w -1)
 
+; --- 経路探索
+(define (cell_id pos) (+ (car pos) (* (cdr pos) world_w)))
+(define (id_to_xy id) (cons (mod id world_w) (/ id world_w)))
+
+(define WALL 0)
+(define EMPTY 1)
+(define PILL 2)
+(define POWERPILL 3)
+
+; 地図を表す赤黒木を作る
+; proc :: (lambda (obj) ...)
+;   各位置の初期値を計算するのに使われる。引数はWALL, EMPTY等
+(define (make_maptree world proc)
+  (maptree_insert_rows proc rbtree-empty (tuple4_0 world) 0))
+
+  (define (maptree_insert_row proc tree y row x)
+    (if (null? row)
+      tree
+      (maptree_insert_row proc
+        (rbtree-insert (cell_id (cons x y)) (proc (car row)) tree)
+        y (cdr row) (+ x 1))))
+
+  (define (maptree_insert_rows proc tree rows y)
+    (if (null? rows)
+      tree
+      (maptree_insert_rows proc
+        (maptree_insert_row proc tree y (car rows) 0)
+        (cdr rows) (+ y 1))))
+
+; treeに以下のデータが入っているとする
+;  99999: 壁
+;  0〜: 探索済み
+;  -1: 未探索
+(define (maptree_dp tree)
+  (let1 q (maptree_init_q tree) 
+    (maptree_dp_1 (cons q tree))))
+
+  (define (maptree_dp_1 qt) ;=> (cons q tree)
+    (let ((q (car qt)) (tree (cdr qt)))
+      (if (null? q)
+        tree
+        (maptree_dp_1 
+          (let ((pos (car q)) (newq (cdr q)))
+            (fold (lambda (qt dir)
+                   (let1 npos (plus_cons pos (direction dir))
+                     (let1 nobj (map_pos npos (car curr_world))
+                       (if (and (= nobj EMPTY) ; 未探索の空白だったら
+                                (= -1 (rbtree-lookup (cell_id npos) tree)))
+                         (cons
+                           (cons npos (car qt))
+                           (rbtree-insert (cell_id npos) 
+                                          (+ 1 (rbtree-lookup (cell_id pos) tree))
+                                          (cdr qt)))
+                         qt))))
+              (cons newq tree)
+              (upto 0 3)))))))
+
+  ; 探索開始点を列挙し、キューの初期値とする
+  (define (maptree_init_q tree)
+    (compact
+      (map (lambda (id)
+             (let1 st (rbtree-lookup id tree)
+               (cond ((= st 99999) 0)
+                     ((= st -1) 0)
+                     (else (id_to_xy id)))))
+        (upto 0 (- (* world_w world_h) 1)))))
+
+  ; 経路探索のためのmaptreeを作る
+  (define (maptree_for_dp world)
+    (make_maptree world
+                  (lambda (obj)
+                    (cond ((= obj PILL) 0)
+                          ((= obj POWERPILL) 0)
+                          ((= obj WALL) 99999)  
+                          (else -1)))))
+
+  ; デバッグ用
+  (define (maptree_to_list tree)
+    (map (lambda (id) (rbtree-lookup id tree))
+      (upto 0 (- (* world_w world_h) 1))))
+
+
+; --- worldから情報を取得する
+
 ; 現在のpower pillモードの残りを返す
 (define (current_vit world) (car (car (cdr world))))
 
@@ -17,6 +101,8 @@
 (define (ghost_locations world)
   (map (lambda (x) (list-ref x 1)) (list-ref world 2))
 )
+
+; ---
 
 ; cons+cons=cons
 (define (plus_cons c1 c2)
@@ -153,53 +239,73 @@
             (if (to_go? (turn_left dir)) 1 0)))
         1
       )
-      (if (binrandom world 0) ; 擬似ランダムな分岐
-        (cond
-          ( ; 同じ方向に行けるか
-            (to_go? dir)
-            (cons state dir)
-          )
-          ( ; 右折可能か？
-            (to_go? (turn_right dir))
-            (cons state (turn_right dir))
-          )
-          ( ; 左折可能か？
-            (to_go? (turn_left dir))
-            (cons state (turn_left dir))
-          )
-          ( else default )
-        )
-        (if (binrandom world 1)
-          (cond
-            ( ; 右折可能か？
-              (to_go? (turn_right dir))
-              (cons state (turn_right dir))
-            )
-            ( ; 左折可能か？
-              (to_go? (turn_left dir))
-              (cons state (turn_left dir))
-            )
-            ( ; 同じ方向に行けるか
-              (to_go? dir)
-              (cons state dir)
-            )
-          )
-          (cond
-            ( ; 左折可能か？
-              (to_go? (turn_left dir))
-              (cons state (turn_left dir))
-            )
-            ( ; 右折可能か？
-              (to_go? (turn_right dir))
-              (cons state (turn_right dir))
-            )
-            ( ; 同じ方向に行けるか
-              (to_go? dir)
-              (cons state dir)
-            )
-          )
-        )
-      )
+      ; 探索
+      (let1 tree (maptree_dp (maptree_for_dp world))
+        (let1 dps
+          (map (lambda (d)
+                 (let1 npos (plus_cons (current_pos world) (direction d))
+                   (cons 
+                     d
+                     (rbtree-lookup (cell_id npos) tree))))
+            (list dir (turn_right dir) (turn_left dir)))
+          (let ((d0 (car (list_0 dps)))
+                (d1 (car (list_1 dps)))
+                (d2 (car (list_2 dps)))
+                (p0 (cdr (list_0 dps)))
+                (p1 (cdr (list_1 dps)))
+                (p2 (cdr (list_2 dps))))
+            (if (> p0 p1)
+              (if (> p0 p2) p0 p2)
+              (if (> p1 p2) p1 p2)))))
+
+
+      ;(if (binrandom world 0) ; 擬似ランダムな分岐
+      ;  (cond
+      ;    ( ; 同じ方向に行けるか
+      ;      (to_go? dir)
+      ;      (cons state dir)
+      ;    )
+      ;    ( ; 右折可能か？
+      ;      (to_go? (turn_right dir))
+      ;      (cons state (turn_right dir))
+      ;    )
+      ;    ( ; 左折可能か？
+      ;      (to_go? (turn_left dir))
+      ;      (cons state (turn_left dir))
+      ;    )
+      ;    ( else default )
+      ;  )
+      ;  (if (binrandom world 1)
+      ;    (cond
+      ;      ( ; 右折可能か？
+      ;        (to_go? (turn_right dir))
+      ;        (cons state (turn_right dir))
+      ;      )
+      ;      ( ; 左折可能か？
+      ;        (to_go? (turn_left dir))
+      ;        (cons state (turn_left dir))
+      ;      )
+      ;      ( ; 同じ方向に行けるか
+      ;        (to_go? dir)
+      ;        (cons state dir)
+      ;      )
+      ;    )
+      ;    (cond
+      ;      ( ; 左折可能か？
+      ;        (to_go? (turn_left dir))
+      ;        (cons state (turn_left dir))
+      ;      )
+      ;      ( ; 右折可能か？
+      ;        (to_go? (turn_right dir))
+      ;        (cons state (turn_right dir))
+      ;      )
+      ;      ( ; 同じ方向に行けるか
+      ;        (to_go? dir)
+      ;        (cons state dir)
+      ;      )
+      ;    )
+      ;  )
+      ;)
     )
     ( ; 同じ方向に行けるか
       (to_go? dir)
@@ -239,10 +345,10 @@
 ; デバッグ用
 ; 上の(cons 0 step)をコメントアウトし、こちらを有効化してlman.htmlに突っ込む
 ; (let ((dummy_map (list (list 0 0 0 0 0 0)
-;                        (list 0 0 0 0 0 0)
-;                        (list 0 1 1 1 0 0)
+;                        (list 0 1 0 1 0 0)
+;                        (list 0 1 2 1 1 0)
 ;                        (list 0 0 1 0 0 0)
-;                        (list 0 0 0 0 0 0)
+;                        (list 0 0 3 1 1 0)
 ;                        (list 0 0 0 0 0 0)))
 ;       (dummy_man (cons 0            ; vitality
 ;                  (cons (cons 2 2)   ; pos
@@ -266,4 +372,10 @@
 ;                     (cons dummy_man
 ;                     (cons dummy_ghosts
 ;                           dummy_fruit)))
-;     (step 0 dummy_world)))
+;     ;(step 0 dummy_world)))
+;     (begin
+;       (step 0 dummy_world)
+;       (let1 tree (maptree_for_dp dummy_world)
+;         (begin
+;           (debug (maptree_to_list (maptree_dp tree))))))
+;))

@@ -98,6 +98,11 @@
 (define (tuple4_2 x) (car (cdr (cdr x))))
 (define (tuple4_3 x) (cdr (cdr (cdr x))))
 
+(define (list_0 x) (car x))
+(define (list_1 x) (car (cdr x)))
+(define (list_2 x) (car (cdr (cdr x))))
+
+
 ; --- 赤黒木
 ;
 ; 使用例(empty, insert, lookup)
